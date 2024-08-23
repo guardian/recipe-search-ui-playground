@@ -54,3 +54,19 @@ export const FullRecipe = z.object({
 });
 
 export type FullRecipe = z.infer<typeof FullRecipe>;
+
+export const CapiProfileTag = z.object({
+  id: z.string(),
+  type: z.string(),
+  bylineImageUrl: z.string().optional(),
+  webTitle: z.string()
+});
+export type CapiProfileTag = z.infer<typeof CapiProfileTag>;
+
+export const CapiProfileResponse = z.object({
+  response: z.object({
+    tag: CapiProfileTag
+  })
+});
+
+export type CapiProfileResponse = z.infer<typeof CapiProfileResponse>;

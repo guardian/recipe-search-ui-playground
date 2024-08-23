@@ -1,10 +1,13 @@
 import { KeywordsGenericSlice } from '../service/schema';
 import { Paper, Typography } from '@mui/material';
 import { sideScollingListItem, sideScrollingList } from './ListStyles';
+import React from 'react';
 
 interface SuggestionComponentProps extends KeywordsGenericSlice {
   title: string;
+  renderContent: (suggestion:string) => React.ReactNode;
 }
+
 export const SuggestionComponent = (props:SuggestionComponentProps) => {
   return <div>
     <Typography style={{fontWeight: "bold"}}>{props.title}</Typography>
@@ -13,7 +16,9 @@ export const SuggestionComponent = (props:SuggestionComponentProps) => {
       {
         props.matches.map(suggestion=><li css={sideScollingListItem}>
           <Paper elevation={1}>
-            <Typography>{suggestion.toLowerCase()}</Typography>
+            {
+              props.renderContent(suggestion)
+            }
           </Paper>
         </li>)
       }

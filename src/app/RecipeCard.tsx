@@ -5,9 +5,10 @@ import { ResultCard, ResultCardProps } from './ResultCard';
 
 interface RecipeCardProps extends ResultCardProps {
   href: string;
+  onClick: ()=>void;
 }
 
-export const RecipeCard = ({href }:RecipeCardProps) => {
+export const RecipeCard = ({href, onClick }:RecipeCardProps) => {
   const [error, setError] = useState<string|undefined>();
   const [recipe, setRecipe] = useState<FullRecipe|undefined>();
 
@@ -19,7 +20,7 @@ export const RecipeCard = ({href }:RecipeCardProps) => {
       .catch((err:Error)=>setError(err.toString()))
   }, [href]);
 
-  return recipe ? <ResultCard onClick={()=>{ }}
+  return recipe ? <ResultCard onClick={onClick}
                               title={recipe?.title}
                               imageUrl={recipe.featuredImage.url}
                               error={error}

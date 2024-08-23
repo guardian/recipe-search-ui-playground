@@ -3,6 +3,7 @@ import { genericKeywordSearch } from '../service/SearchService';
 import { KeywordsGenericSlice } from '../service/schema';
 import { Typography } from '@mui/material';
 import { SuggestionComponent } from './SuggestionComponent';
+import { ProfileCard } from './ProfileCard';
 
 interface SuggestionsProps {
   forSearchTerm: string;
@@ -31,7 +32,11 @@ export const Suggestions = ({forSearchTerm}:SuggestionsProps) => {
   } else {
     return <>
       <Typography>Maybe you meant...?</Typography>
-      {chefSuggestions && chefSuggestions.matches.length>0? <SuggestionComponent title="Chefs" {...chefSuggestions}/> : undefined }
+      {chefSuggestions && chefSuggestions.matches.length>0? <SuggestionComponent
+        title="Chefs"
+        {...chefSuggestions}
+        renderContent={(profileId)=><ProfileCard profileId={profileId} onClick={()=>{ }}/> }
+      /> : undefined }
     </>
   }
 }
