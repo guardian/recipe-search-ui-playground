@@ -15,10 +15,12 @@ const KeywordsGenericContent = z.object({
   results: z.array(TitleSearchResult)
 });
 
-const KeywordsGenericSlice = z.object({
+export const KeywordsGenericSlice = z.object({
   matches: z.array(z.string()),
   content: KeywordsGenericContent
 });
+
+export type KeywordsGenericSlice = z.infer<typeof KeywordsGenericSlice>;
 
 export const KeywordsGenericSearchResponse = z.object({
   suitableForDietIds: KeywordsGenericSlice,

@@ -6,6 +6,7 @@ import { Label } from '@mui/icons-material';
 import { genericKeywordSearch, recipeSearch } from '../service/SearchService';
 import { TitleSearchResult } from '../service/schema';
 import { ResultsList } from './ResultsList';
+import { Suggestions } from './Suggestions';
 
 export const SearchPane = () => {
   const searchPaneBase = css`
@@ -64,8 +65,12 @@ export const SearchPane = () => {
         </span>
       </Grid>
 
-      <Grid item style={{width: "100%", maxHeight: "80%", marginTop: "0.4em", overflow: "auto"}}>
+      <Grid item style={{width: "100%", maxHeight: "40%", marginTop: "0.4em", overflow: "auto"}}>
         <ResultsList results={results}/>
+      </Grid>
+
+      <Grid item style={{width: "100%", maxHeight: "40%", marginTop: "0.4em"}}>
+        <Suggestions forSearchTerm={searchString}></Suggestions>
       </Grid>
     </Grid>
   </Paper>
