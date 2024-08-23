@@ -1,6 +1,6 @@
 import { KeywordsGenericSearchResponse, RecipeSearchResponse } from './schema';
 
-const baseUrl = "https://recipes.guardianapis.com";
+export const baseUrl = "https://recipes.guardianapis.com";
 
 export async function genericKeywordSearch(term:string):Promise<KeywordsGenericSearchResponse> {
   const endpoint = baseUrl + `/keywords/detection?q=${encodeURIComponent(term)}`

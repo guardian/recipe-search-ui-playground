@@ -10,12 +10,12 @@ import { ResultsList } from './ResultsList';
 export const SearchPane = () => {
   const searchPaneBase = css`
     display: flex;
-      max-width: 40vw;
+      max-width: 95vw;
       max-height: 100vh;
-      min-width: 40vw;
+      min-width: 95vw;
       min-height: 40vh;
       height: 90vh;
-      margin: 5px;
+      margin: auto;
       padding: 1em;
       flex: 1;
   `;
@@ -64,7 +64,7 @@ export const SearchPane = () => {
         </span>
       </Grid>
 
-      <Grid item style={{width: "100%", maxHeight: "80%", marginTop: "0.4em"}}>
+      <Grid item style={{width: "100%", maxHeight: "80%", marginTop: "0.4em", overflow: "auto"}}>
         <ResultsList results={results}/>
       </Grid>
     </Grid>

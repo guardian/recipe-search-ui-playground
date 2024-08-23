@@ -37,3 +37,18 @@ export const RecipeSearchResponse = z.object({
 });
 
 export type RecipeSearchResponse = z.infer<typeof RecipeSearchResponse>;
+
+const RecipeImage = z.object({
+  url: z.string()
+});
+
+export const FullRecipe = z.object({
+  canonicalArticle: z.string().optional().nullable(),
+  cuisineIds: z.array(z.string()),
+  description: z.string(),
+  featuredImage: RecipeImage,
+  id: z.string(),
+  title: z.string(),
+});
+
+export type FullRecipe = z.infer<typeof FullRecipe>;

@@ -1,5 +1,6 @@
 import { TitleSearchResult } from '../service/schema';
 import { css, Grid, Paper, Typography } from '@mui/material';
+import { ResultCard } from './ResultCard';
 
 interface ResultsListProps {
   results: TitleSearchResult[]
@@ -9,20 +10,13 @@ export const ResultsList = ({results}:ResultsListProps) => {
   const itemCss = css`
     list-style: none;
       margin: 2px;
+      display: inline-block;
   `;
 
-  const listItemStyle = css`
-    cursor: pointer;
-      &:hover {
-          background-color: cornflowerblue;
-      }
-  `;
-  return <ul style={{paddingLeft: 0}}>
+  return <ul style={{paddingLeft: 0, width: "max-content"}}>
     {
       results.map(((hit, ctr)=><li css={itemCss} key={ctr}>
-        <Paper elevation={1} css={listItemStyle}>
-          <Typography>{hit.title}</Typography>
-        </Paper>
+        <ResultCard {...hit} onClick={()=>{ } }/>
       </li>))
     }
   </ul>
