@@ -9,12 +9,7 @@ interface SuggestionComponentProps extends KeywordsGenericSlice {
 }
 
 export const SuggestionComponent = (props:SuggestionComponentProps) => {
-  return <div>
-    <Typography style={{fontWeight: "bold"}}>{props.title}</Typography>
-
-    <ul css={sideScrollingList}>
-      {
-        props.matches.map(suggestion=><li css={sideScollingListItem}>
+  return props.matches.map(suggestion=><li css={sideScollingListItem}>
           <Paper elevation={1}>
             {
               props.renderContent(suggestion)
@@ -22,6 +17,3 @@ export const SuggestionComponent = (props:SuggestionComponentProps) => {
           </Paper>
         </li>)
       }
-    </ul>
-  </div>
-}

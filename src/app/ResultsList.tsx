@@ -1,5 +1,4 @@
 import { TitleSearchResult } from '../service/schema';
-import { ResultCard } from './ResultCard';
 import { sideScollingListItem, sideScrollingList } from './ListStyles';
 import { RecipeCard } from './RecipeCard';
 
