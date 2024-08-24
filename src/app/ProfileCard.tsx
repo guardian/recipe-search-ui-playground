@@ -6,7 +6,7 @@ import { Person3 } from '@mui/icons-material';
 
 interface ProfileCardProps {
   profileId: string;
-  onClick: ()=>void;
+  onClick: (profile:CapiProfileTag)=>void;
 }
 
 export const ProfileCard = ({profileId, onClick}:ProfileCardProps) => {
@@ -28,6 +28,6 @@ export const ProfileCard = ({profileId, onClick}:ProfileCardProps) => {
   const maybeIcon = profile?.bylineImageUrl ? undefined : <Person3/>;
 
   return profile ?
-      <ResultCard title={profile.webTitle} imageUrl={profile.bylineImageUrl} icon={maybeIcon} error={error} onClick={onClick}/>
+      <ResultCard title={profile.webTitle} imageUrl={profile.bylineImageUrl} icon={maybeIcon} error={error} onClick={()=>onClick(profile)}/>
       : undefined
 }

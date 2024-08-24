@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { genericKeywordSearch } from '../service/SearchService';
-import { KeywordsGenericSlice } from '../service/schema';
+import { CapiProfileTag, KeywordsGenericSlice } from '../service/schema';
 import { Typography } from '@mui/material';
 import { SuggestionComponent } from './SuggestionComponent';
 import { ProfileCard } from './ProfileCard';
@@ -10,9 +10,12 @@ import { DinnerDining, Flaky, RestaurantMenu } from '@mui/icons-material';
 
 interface SuggestionsProps {
   forSearchTerm: string;
+  updateForcer?: number;
+  chefSelected: (chef:CapiProfileTag)=>void;
+  showChefs: boolean;
 }
 
-export const Suggestions = ({forSearchTerm}:SuggestionsProps) => {
+export const Suggestions = ({forSearchTerm, updateForcer, showChefs, chefSelected}:SuggestionsProps) => {
   const [lastError, setLastError] = useState("");
   const [chefSuggestions, setChefSuggestions] = useState<KeywordsGenericSlice|undefined>();
   const [cuisineSuggestions, setCuisineSuggestions] = useState<KeywordsGenericSlice|undefined>();
@@ -28,7 +31,7 @@ export const Suggestions = ({forSearchTerm}:SuggestionsProps) => {
         setMealTypeSuggestions(results.mealTypeIds);
       })
       .catch((err:Error)=>setLastError(err.toString()))
-  }, [forSearchTerm]);
+  }, [forSearchTerm, updateForcer]);
 
   const clickedSuggestion = ()=>{
   }
@@ -41,10 +44,10 @@ export const Suggestions = ({forSearchTerm}:SuggestionsProps) => {
         <div style={{overflowY: "auto"}}>
         <ul css={sideScrollingList}>
           <>
-            {chefSuggestions && chefSuggestions.matches.length>0? <SuggestionComponent
+            {showChefs && chefSuggestions && chefSuggestions.matches.length>0? <SuggestionComponent
               title="Chefs"
               {...chefSuggestions}
-              renderContent={(profileId)=><ProfileCard profileId={profileId} onClick={clickedSuggestion}/> }
+              renderContent={(profileId)=><ProfileCard profileId={profileId} onClick={chefSelected}/> }
             /> : undefined }
             {mealTypeSuggestions && forSearchTerm.length>0 && mealTypeSuggestions.matches.length > 0 ? <SuggestionComponent
                 title="Meals"

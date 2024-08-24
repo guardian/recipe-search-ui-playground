@@ -18,7 +18,7 @@ interface FieldWithWeighting {
   weighting: number;  //should be 0<weighting<1
 }
 
-interface RecipeSearchFilters {
+export interface RecipeSearchFilters {
   diets?: string[]; //must be a valid diet. use keyword search to find valid values
   contributors?: string[];  //must be a valid contributor. use keyword search to find valid values
   filterType?: "Post"|"During";
