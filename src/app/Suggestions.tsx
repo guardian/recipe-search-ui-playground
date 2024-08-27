@@ -36,37 +36,41 @@ export const Suggestions = ({forSearchTerm, updateForcer, showChefs, chefSelecte
   const clickedSuggestion = ()=>{
   }
 
-  if(! (chefSuggestions || cuisineSuggestions || dietTypeSuggestions || mealTypeSuggestions)) {
-    return undefined
-  } else {
-    return <>
-      <Typography>Maybe you meant...?</Typography>
-        <div style={{overflowY: "auto"}}>
-        <ul css={sideScrollingList}>
-          <>
-            {showChefs && chefSuggestions && chefSuggestions.matches.length>0? <SuggestionComponent
-              title="Chefs"
-              {...chefSuggestions}
-              renderContent={(profileId)=><ProfileCard profileId={profileId} onClick={chefSelected}/> }
-            /> : undefined }
-            {mealTypeSuggestions && forSearchTerm.length>0 && mealTypeSuggestions.matches.length > 0 ? <SuggestionComponent
-                title="Meals"
-                {...mealTypeSuggestions}
-                renderContent={(type)=><ResultCard capitalize onClick={clickedSuggestion} title={type} icon={<DinnerDining/>}/>}
-            /> : undefined }
-            {dietTypeSuggestions  && forSearchTerm.length>0 && dietTypeSuggestions.matches.length>0 ? <SuggestionComponent
-                title="Dietry"
-                {...dietTypeSuggestions}
-                renderContent={(diet)=><ResultCard capitalize onClick={clickedSuggestion} title={diet} icon={<Flaky/>}/>}
-            /> : undefined }
-            {cuisineSuggestions && forSearchTerm.length>0 && cuisineSuggestions.matches.length>0 ? <SuggestionComponent
-                title="Region"
-                {...cuisineSuggestions}
-                renderContent={(cuisine)=><ResultCard capitalize onClick={clickedSuggestion} title={cuisine} icon={<RestaurantMenu/>}/>}
-            /> : undefined }
-          </>
-        </ul>
-        </div>
-    </>
-  }
+  const haveContent = ()=>
+    (chefSuggestions && chefSuggestions.matches.length>0) ||
+    (cuisineSuggestions && cuisineSuggestions.matches.length>0) ||
+    (dietTypeSuggestions && dietTypeSuggestions.matches.length>0) ||
+    (mealTypeSuggestions && mealTypeSuggestions.matches.length>0)
+
+  return haveContent() ? <>
+      {
+        forSearchTerm.length > 0 ? <Typography>Maybe you meant...?</Typography> : <Typography>More search options</Typography>
+      }
+      <div style={{overflowY: "auto"}}>
+      <ul css={sideScrollingList}>
+        <>
+          {showChefs && chefSuggestions && chefSuggestions.matches.length>0? <SuggestionComponent
+            title="Chefs"
+            {...chefSuggestions}
+            renderContent={(profileId)=><ProfileCard profileId={profileId} onClick={chefSelected}/> }
+          /> : undefined }
+          {mealTypeSuggestions && mealTypeSuggestions.matches.length > 0 ? <SuggestionComponent
+              title="Meals"
+              {...mealTypeSuggestions}
+              renderContent={(type)=><ResultCard capitalize onClick={clickedSuggestion} title={type} icon={<DinnerDining/>}/>}
+          /> : undefined }
+          {dietTypeSuggestions && dietTypeSuggestions.matches.length>0 ? <SuggestionComponent
+              title="Dietry"
+              {...dietTypeSuggestions}
+              renderContent={(diet)=><ResultCard capitalize onClick={clickedSuggestion} title={diet} icon={<Flaky/>}/>}
+          /> : undefined }
+          {cuisineSuggestions && cuisineSuggestions.matches.length>0 ? <SuggestionComponent
+              title="Region"
+              {...cuisineSuggestions}
+              renderContent={(cuisine)=><ResultCard capitalize onClick={clickedSuggestion} title={cuisine} icon={<RestaurantMenu/>}/>}
+          /> : undefined }
+        </>
+      </ul>
+      </div>
+   </> : undefined
 }

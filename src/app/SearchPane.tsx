@@ -9,6 +9,8 @@ import { ResultsList } from './ResultsList';
 import { Suggestions } from './Suggestions';
 import { FullSearchForm } from './FullSearchForm';
 
+const visualRelevancyCutoff = 0.72;
+
 export const SearchPane = () => {
   const searchPaneBase = css`
     display: flex;
@@ -74,10 +76,15 @@ export const SearchPane = () => {
           >
             <Grid container css={inputStyling} spacing={1}>
               <Grid item><SearchIcon/></Grid>
-              <Grid item css={growable}><DebouncedInput placeholder="Find me a recipe..." type="text" id="searchbox" css={inputStyling} timeout={500} onUpdated={(term)=>{
-                console.log(term);
-                setSearchString(term);
-              }}/></Grid>
+              <Grid item css={growable}>
+                <DebouncedInput placeholder="Find me a recipe..." type="text" id="searchbox"
+                                css={inputStyling}
+                                timeout={500}
+                                initialValue={searchString}
+                                onUpdated={(term)=>{
+                                  setSearchString(term);
+                                }}
+                /></Grid>
             </Grid>
           </AccordionSummary>
           <AccordionDetails>
@@ -89,21 +96,32 @@ export const SearchPane = () => {
           </AccordionDetails>
         </Accordion>
       </Grid>
-      <Grid item>
+
+      <Grid item style={{
+        width: '100%',
+        maxHeight: '40%',
+        marginTop: '0.4em',
+        overflow: 'auto',
+        order: (maxScore && maxScore < visualRelevancyCutoff) ? '99' : 'inherit'
+      }}>
         <span>
-          <Typography>We found {searchHits} recipes that might interest you...</Typography>
+          {
+            (maxScore && maxScore < visualRelevancyCutoff) ?
+              <Typography>We couldn't find anything that seemed very relevant, but here are {searchHits} recipes that might interest you</Typography> :
+              <Typography>We found {searchHits} recipes that might interest you...</Typography>
+          }
         </span>
+        <ResultsList results={results} />
       </Grid>
 
-      <Grid item style={{width: "100%", maxHeight: "40%", marginTop: "0.4em", overflow: "auto"}}>
-        <ResultsList results={results}/>
-      </Grid>
-
-      <Grid item style={{width: "100%", maxHeight: "40%", marginTop: "0.4em"}}>
+      <Grid item style={{ width: '100%', maxHeight: '40%', marginTop: '1em' }}>
         <Suggestions forSearchTerm={searchString}
                      updateForcer={suggestionUpdateForcer}
                      showChefs={selectedChefs.length===0} //don't suggest more chefs if we already have one selected
-                     chefSelected={(profile)=>setSelectedChefs((prev)=>prev.concat([profile]))}
+                     chefSelected={(profile)=>{
+                       setSelectedChefs((prev)=>prev.concat([profile]));
+                       setSearchString("");
+                     }}
         ></Suggestions>
       </Grid>
     </Grid>
