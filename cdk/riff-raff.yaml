@@ -1,0 +1,28 @@
+allowedStages:
+  - PROD
+deployments:
+  cfn-eu-west-1-content-api-recipe-search-ui-playground:
+    type: cloud-formation
+    regions:
+      - eu-west-1
+    stacks:
+      - content-api
+    app: recipe-search-ui-playground
+    contentDirectory: cdk.out
+    parameters:
+      templateStagePaths:
+        PROD: RecipeSearchUiPlayground-euwest-1-PROD.template.json
+  recipe-search-ui-playground:
+    type: aws-s3
+    parameters:
+      bucketSsmKeyStageParam:
+        CODE: /account/services/static.serving.bucket
+        PROD: /account/services/static.serving.bucket
+      cacheControl:
+        - pattern: ".*.html$"
+          value: "public, max-age=60"
+        - pattern: ".*"
+          value: "public, max-age=3600"
+      publicReadAcl: true
+      prefixStack: false
+    dependencies: ["cfn-eu-west-1-content-api-recipe-search-ui-playground"]
