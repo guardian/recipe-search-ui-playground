@@ -1,9 +1,9 @@
-import type { GuStackProps} from '@guardian/cdk/lib/constructs/core';
+import type { GuStackProps } from '@guardian/cdk/lib/constructs/core';
 import { GuStack, GuStringParameter } from '@guardian/cdk/lib/constructs/core';
-import type { App} from 'aws-cdk-lib';
+import type { App } from 'aws-cdk-lib';
 import { aws_ssm, CfnOutput } from 'aws-cdk-lib';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
-import { Distribution, HttpVersion } from 'aws-cdk-lib/aws-cloudfront';
+import { Distribution, HttpVersion, PriceClass } from 'aws-cdk-lib/aws-cloudfront';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
@@ -44,6 +44,7 @@ export class RecipeSearchUiPlayground extends GuStack {
       domainNames: [hostingDomain[this.stage]!],
       enableLogging: false,
       errorResponses: [],
+      priceClass: PriceClass.PRICE_CLASS_100,
       httpVersion: HttpVersion.HTTP2_AND_3,
       webAclId,
       defaultBehavior: {

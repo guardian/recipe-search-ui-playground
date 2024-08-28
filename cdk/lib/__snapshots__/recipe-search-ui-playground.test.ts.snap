@@ -89,6 +89,7 @@ exports[`The RecipeSearchUiPlayground stack matches the snapshot 1`] = `
               },
             },
           ],
+          "PriceClass": "PriceClass_100",
           "ViewerCertificate": {
             "AcmCertificateArn": {
               "Ref": "DistroCertArn",
