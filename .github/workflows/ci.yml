@@ -22,8 +22,8 @@ jobs:
 
       - run: npm ci --legacy-peer-deps
 
-      - run: npx nx report --verbose
-      - run: npm test -- --verbose
+      - run: npx nx report
+      - run: npm test
       - run: npm run build
 
       - run: npm ci
@@ -40,6 +40,8 @@ jobs:
           app: recipe-search-ui-playground
           roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          configPath: cdk/riff-raff.yaml
+          projectName: "Off-platform::recipe-search-ui-playground"
           contentDirectories: |
             cdk:
               - cdk/cdk.out
