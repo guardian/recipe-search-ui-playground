@@ -22,7 +22,8 @@ jobs:
 
       - run: npm ci --legacy-peer-deps
 
-      - run: npm test
+      - run: npx nx report --verbose
+      - run: npm test -- --verbose
       - run: npm run build
 
       - run: npm ci
