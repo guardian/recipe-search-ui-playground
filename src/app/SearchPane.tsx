@@ -36,6 +36,8 @@ export const SearchPane = () => {
   const [searchString, setSearchString] = useState("");
   const [lastError, setLastError] = useState<string|undefined>();
 
+  const [searchExpanded, setSearchExpanded] = useState(false);
+
   const [searchHits, setSearchHits] = useState(0);
   const [maxScore, setMaxScore] = useState(0);
   const [results, setResults] = useState<TitleSearchResult[]>([]);
@@ -64,13 +66,17 @@ export const SearchPane = () => {
       .catch((err:Error)=>setLastError(err.toString()));
   }, [searchString, selectedChefs]);
 
+  useEffect(()=>{
+    const shouldExpand = selectedChefs.length > 0;  //TODO - add more in here as they are implemented
+    setSearchExpanded(shouldExpand);
+  }, [selectedChefs])
   return <Paper css={searchPaneBase} elevation={3}>
     <Grid container direction="column" columns={1}>
 
       <Grid item>
-        <Accordion>
+        <Accordion expanded={searchExpanded}>
           <AccordionSummary
-            expandIcon={<ExpandMore />}
+            expandIcon={<ExpandMore onClick={()=>setSearchExpanded(prev=>!prev)}/>}
             aria-controls="panel1-content"
             id="panel1-header"
           >
