@@ -1,0 +1,135 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`The RecipeSearchUiPlayground stack matches the snapshot 1`] = `
+{
+  "Metadata": {
+    "gu:cdk:constructs": [
+      "GuStringParameter",
+      "GuStringParameter",
+    ],
+    "gu:cdk:version": "TEST",
+  },
+  "Outputs": {
+    "DistroUrlOut": {
+      "Value": {
+        "Fn::GetAtt": [
+          "SearchPlaygroundDistE0868C1C",
+          "DomainName",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "DistroCertArn": {
+      "Default": "/TEST/content-api/recipe-search-ui-playground/GlobalCertArn",
+      "Description": "Cert to use for recipe search UI playground TEST. This must reside in us-east-1",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "SsmParameterValueaccountserviceswafdefaultrulesetarnC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Default": "/account/services/waf/default-ruleset-arn",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "StaticBucketName": {
+      "Default": "/account/services/static.serving.bucket",
+      "Description": "SSM parameter giving the name of a bucket which is to be used for static hosting",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "SearchPlaygroundDistE0868C1C": {
+      "Properties": {
+        "DistributionConfig": {
+          "Aliases": [
+            "recipe-search.test.capi.dev-gutools.co.uk",
+          ],
+          "DefaultCacheBehavior": {
+            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "Compress": true,
+            "TargetOriginId": "RecipeSearchUiPlaygroundSearchPlaygroundDistOrigin1A047ED52",
+            "ViewerProtocolPolicy": "allow-all",
+          },
+          "DefaultRootObject": "index.html",
+          "Enabled": true,
+          "HttpVersion": "http2and3",
+          "IPV6Enabled": true,
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Ref": "StaticBucketName",
+                    },
+                    ".s3.",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix",
+                    },
+                  ],
+                ],
+              },
+              "Id": "RecipeSearchUiPlaygroundSearchPlaygroundDistOrigin1A047ED52",
+              "OriginPath": "/TEST/recipe-search-ui-playground",
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "origin-access-identity/cloudfront/",
+                      {
+                        "Ref": "SearchPlaygroundDistOrigin1S3Origin26C237DE",
+                      },
+                    ],
+                  ],
+                },
+              },
+            },
+          ],
+          "PriceClass": "PriceClass_100",
+          "ViewerCertificate": {
+            "AcmCertificateArn": {
+              "Ref": "DistroCertArn",
+            },
+            "MinimumProtocolVersion": "TLSv1.2_2021",
+            "SslSupportMethod": "sni-only",
+          },
+          "WebACLId": {
+            "Ref": "SsmParameterValueaccountserviceswafdefaultrulesetarnC96584B6F00A464EAD1953AFF4B05118Parameter",
+          },
+        },
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/recipe-search-ui-playground",
+          },
+          {
+            "Key": "Stack",
+            "Value": "content-api",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+      },
+      "Type": "AWS::CloudFront::Distribution",
+    },
+    "SearchPlaygroundDistOrigin1S3Origin26C237DE": {
+      "Properties": {
+        "CloudFrontOriginAccessIdentityConfig": {
+          "Comment": "Identity for RecipeSearchUiPlaygroundSearchPlaygroundDistOrigin1A047ED52",
+        },
+      },
+      "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+    },
+  },
+}
+`;

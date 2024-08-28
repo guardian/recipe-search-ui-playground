@@ -8,6 +8,13 @@ on:
 
 jobs:
   main:
+    permissions:
+      id-token: write
+      contents: read
+      checks: write
+      issues: read
+      pull-requests: write
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,17 +29,28 @@ jobs:
 
       - run: npm ci --legacy-peer-deps
 
+      - run: npx nx report
       - run: npm test
       - run: npm run build
+
+      - run: npm ci
+        working-directory: cdk
+      - run: npm test
+        working-directory: cdk
+      - run: npm run synth
+        working-directory: cdk
+
       - run: ls -lh dist/recipe-search-ui-playground
-#
-#      - uses: guardian/actions-riff-raff@v4
-#        with:
-#          app: recipe-search-ui-playground
-#          roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
-#          githubToken: ${{ secrets.GITHUB_TOKEN }}
-#          contentDirectories: |
-#            cdk:
-#              - cdk/cdk.out
-#            recipe-search-ui-playground:
-#              - dist/recipe-search-ui-playground
+
+      - uses: guardian/actions-riff-raff@v4
+        with:
+          app: recipe-search-ui-playground
+          roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          configPath: cdk/riff-raff.yaml
+          projectName: "Off-platform::recipe-search-ui-playground"
+          contentDirectories: |
+            cdk:
+              - cdk/cdk.out
+            recipe-search-ui-playground:
+              - dist/recipe-search-ui-playground
