@@ -12,10 +12,13 @@ interface SuggestionsProps {
   forSearchTerm: string;
   updateForcer?: number;
   chefSelected: (chef:CapiProfileTag)=>void;
+  cuisineSelected: (item:string)=>void;
+  dietTypeSelected: (item:string)=>void;
+  mealTypeSelected: (item:string)=>void;
   showChefs: boolean;
 }
 
-export const Suggestions = ({forSearchTerm, updateForcer, showChefs, chefSelected}:SuggestionsProps) => {
+export const Suggestions = ({forSearchTerm, updateForcer, showChefs, chefSelected, cuisineSelected, dietTypeSelected, mealTypeSelected}:SuggestionsProps) => {
   const [lastError, setLastError] = useState("");
   const [chefSuggestions, setChefSuggestions] = useState<KeywordsGenericSlice|undefined>();
   const [cuisineSuggestions, setCuisineSuggestions] = useState<KeywordsGenericSlice|undefined>();
@@ -57,17 +60,17 @@ export const Suggestions = ({forSearchTerm, updateForcer, showChefs, chefSelecte
           {mealTypeSuggestions && mealTypeSuggestions.matches.length > 0 ? <SuggestionComponent
               title="Meals"
               {...mealTypeSuggestions}
-              renderContent={(type)=><ResultCard capitalize onClick={clickedSuggestion} title={type} icon={<DinnerDining/>}/>}
+              renderContent={(type)=><ResultCard capitalize onClick={()=>mealTypeSelected(type)} title={type} icon={<DinnerDining/>}/>}
           /> : undefined }
           {dietTypeSuggestions && dietTypeSuggestions.matches.length>0 ? <SuggestionComponent
               title="Dietry"
               {...dietTypeSuggestions}
-              renderContent={(diet)=><ResultCard capitalize onClick={clickedSuggestion} title={diet} icon={<Flaky/>}/>}
+              renderContent={(diet)=><ResultCard capitalize onClick={()=>dietTypeSelected(diet)} title={diet} icon={<Flaky/>}/>}
           /> : undefined }
           {cuisineSuggestions && cuisineSuggestions.matches.length>0 ? <SuggestionComponent
               title="Region"
               {...cuisineSuggestions}
-              renderContent={(cuisine)=><ResultCard capitalize onClick={clickedSuggestion} title={cuisine} icon={<RestaurantMenu/>}/>}
+              renderContent={(cuisine)=><ResultCard capitalize onClick={()=>cuisineSelected(cuisine)} title={cuisine} icon={<RestaurantMenu/>}/>}
           /> : undefined }
         </>
       </ul>

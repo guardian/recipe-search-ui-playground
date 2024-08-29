@@ -43,13 +43,16 @@ export const SearchPane = () => {
   const [results, setResults] = useState<TitleSearchResult[]>([]);
 
   const [selectedChefs, setSelectedChefs] = useState<CapiProfileTag[]>([]);
+  const [selectedMealTypes, setSelectedMealTypes] = useState<string[]>([]);
+  const [selectedDiets, setSelectedDiets] = useState<string[]>([]);
 
   const [suggestionUpdateForcer, setSuggestionUpdateForcer] = useState(0);
   const forceSuggestionUpdate = ()=>setSuggestionUpdateForcer(prev=>prev+1);
 
-  const getFilters:()=>RecipeSearchFilters|undefined = ()=>selectedChefs.length > 0 ? ({
+  const getFilters:()=>RecipeSearchFilters|undefined = ()=>selectedChefs.length > 0 || selectedDiets.length > 0 ? ({
     filterType: "Post",
-    contributors: selectedChefs.map(c=>c.id)
+    contributors: selectedChefs.map(c=>c.id),
+    diets: selectedDiets
   }) : undefined;
 
   useEffect(()=>{
@@ -64,12 +67,13 @@ export const SearchPane = () => {
         forceSuggestionUpdate();
       })
       .catch((err:Error)=>setLastError(err.toString()));
-  }, [searchString, selectedChefs]);
+  }, [searchString, selectedChefs, selectedDiets]);
 
   useEffect(()=>{
-    const shouldExpand = selectedChefs.length > 0;  //TODO - add more in here as they are implemented
+    const shouldExpand = selectedChefs.length > 0 || selectedMealTypes.length > 0 || selectedDiets.length > 0;  //TODO - add more in here as they are implemented
     setSearchExpanded(shouldExpand);
-  }, [selectedChefs])
+  }, [selectedChefs, selectedMealTypes, selectedDiets])
+
   return <Paper css={searchPaneBase} elevation={3}>
     <Grid container direction="column" columns={1}>
 
@@ -96,7 +100,11 @@ export const SearchPane = () => {
           <AccordionDetails>
             <FullSearchForm
               chefs={selectedChefs}
+              mealTypes={selectedMealTypes}
+              diets={selectedDiets}
               onChefRemoved={(chefId)=>setSelectedChefs((prev)=>prev.filter((c)=>c.id!==chefId))}
+              onMealTypeRemoved={(mealId)=>setSelectedMealTypes((prev)=>prev.filter((mt)=>mt!==mealId))}
+              onDietRemoved={(dietId)=>setSelectedDiets((prev)=>prev.filter(d=>d!==dietId))}
               onUpdated={()=>{ }}
             />
           </AccordionDetails>
@@ -128,6 +136,15 @@ export const SearchPane = () => {
                        setSelectedChefs((prev)=>prev.concat([profile]));
                        setSearchString("");
                      }}
+                     mealTypeSelected={(mt)=>{
+                       setSelectedMealTypes((prev)=>prev.concat([mt]));
+                       setSearchString("");
+                     }}
+                     dietTypeSelected={(dt)=>{
+                       setSelectedDiets((prev)=>prev.concat([dt]));
+                       setSearchString("");
+                     }}
+                     cuisineSelected={(ct)=>{} }
         ></Suggestions>
       </Grid>
     </Grid>
