@@ -9,7 +9,7 @@ import { ResultsList } from './ResultsList';
 import { Suggestions } from './Suggestions';
 import { FullSearchForm } from './FullSearchForm';
 
-const visualRelevancyCutoff = 0.72;
+const visualRelevancyCutoff = 0.75;
 
 export const SearchPane = () => {
   const searchPaneBase = css`
@@ -113,11 +113,11 @@ export const SearchPane = () => {
         <span>
           {
             (maxScore && maxScore < visualRelevancyCutoff) ?
-              <Typography>We couldn't find anything that seemed very relevant, but here are {searchHits} recipes that might interest you</Typography> :
+              <Typography>We couldn't find any recipes that seemed very relevant, but here are some that might interest you</Typography> :
               <Typography>We found {searchHits} recipes that might interest you...</Typography>
           }
         </span>
-        <ResultsList results={results} />
+        <ResultsList results={results} showScore scoreCutoff={(maxScore && maxScore  > visualRelevancyCutoff) ? visualRelevancyCutoff : 0.6}/>
       </Grid>
 
       <Grid item style={{ width: '100%', maxHeight: '40%', marginTop: '1em' }}>
