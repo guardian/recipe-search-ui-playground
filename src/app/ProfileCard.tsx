@@ -20,11 +20,6 @@ export const ProfileCard = ({profileId, onClick}:ProfileCardProps) => {
       .catch((err:Error)=>setError(err.toString()))
   }, [profileId]);
 
-  console.log(`ProfileCard: ${profileId}`);
-
-  console.log(profile);
-  console.log(error);
-
   const maybeIcon = profile?.bylineImageUrl ? undefined : <Person3/>;
 
   return profile ?

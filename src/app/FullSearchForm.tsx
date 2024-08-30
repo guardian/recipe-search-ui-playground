@@ -25,7 +25,7 @@ interface FilterElementProps<T> {
 function FilterElement<T>({renderChip, heading, content}:FilterElementProps<T>) {
   return  <Grid container direction="row" spacing={2}>
     <Grid item>
-      <Typography css={headingStyle}>{heading}</Typography>
+      <Typography css={headingStyle} style={{paddingTop: "0.2em", paddingRight: "0.2em"}}>{heading}</Typography>
     </Grid>
     <Grid item>
       <Grid container spacing={1} direction="row">
@@ -40,7 +40,7 @@ function FilterElement<T>({renderChip, heading, content}:FilterElementProps<T>) 
 export const FullSearchForm:React.FC<FullSearchFormProps> = ({onUpdated, chefs, mealTypes, diets, onChefRemoved, onMealTypeRemoved, onDietRemoved})=> {
 
 
-  return <Grid container direction="row" spacing={4}>
+  return <Grid container direction="row" spacing={3}>
     { chefs.length > 0 ? <Grid item>
       <FilterElement heading="By" content={chefs}
                      renderChip={(c:CapiProfileTag,i)=>
@@ -57,7 +57,7 @@ export const FullSearchForm:React.FC<FullSearchFormProps> = ({onUpdated, chefs, 
     </Grid> : undefined }
 
     {diets.length > 0 ? <Grid item>
-      <FilterElement heading="That are" content={diets}
+      <FilterElement heading="That is" content={diets}
                      renderChip={(dt, i)=>
                       <Chip key={i} label={dt} onDelete={()=>onDietRemoved(dt)}/>}
       />
