@@ -32,10 +32,22 @@ export const KeywordsGenericSearchResponse = z.object({
 
 export type KeywordsGenericSearchResponse = z.infer<typeof KeywordsGenericSearchResponse>;
 
+export const StatsEntry = z.object({
+  doc_count_error_upper_bound: z.number().optional(),
+  sum_doc_other_count: z.number().optional(),
+  buckets: z.array(z.object({
+    key: z.string(),
+    doc_count: z.number()
+  }))
+});
+
+export type StatsEntry = z.infer<typeof StatsEntry>;
+
 export const RecipeSearchResponse = z.object({
   hits: z.number(),
   maxScore: z.number().nullable().optional(),
-  results: z.array(TitleSearchResult)
+  results: z.array(TitleSearchResult),
+  stats: z.record(z.string(), StatsEntry)
 });
 
 export type RecipeSearchResponse = z.infer<typeof RecipeSearchResponse>;
