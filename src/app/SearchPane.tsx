@@ -48,6 +48,7 @@ export const SearchPane = () => {
   const [selectedDiets, setSelectedDiets] = useState<string[]>([]);
 
   const [possibleDiets, setPossibleDiets] = useState<StatsEntry|undefined>(undefined);
+  const [possibleChefs, setPossibleChefs] = useState<StatsEntry|undefined>(undefined);
 
   const [suggestionUpdateForcer, setSuggestionUpdateForcer] = useState(0);
   const forceSuggestionUpdate = ()=>setSuggestionUpdateForcer(prev=>prev+1);
@@ -68,6 +69,7 @@ export const SearchPane = () => {
         if(result.maxScore) setMaxScore(result.maxScore);
         setResults(result.results);
         setPossibleDiets(result.stats["suitableForDietIds"]);
+        setPossibleChefs(result.stats["contributors"])
         forceSuggestionUpdate();
       })
       .catch((err:Error)=>{
@@ -83,6 +85,11 @@ export const SearchPane = () => {
 
   const dietTypeSelected = (dt:string)=>{
     setSelectedDiets((prev)=>prev.concat([dt]));
+    setSearchString("");
+  }
+
+  const chefSelected = (profile:CapiProfileTag)=>{
+    setSelectedChefs((prev)=>prev.concat([profile]));
     setSearchString("");
   }
 
@@ -115,7 +122,7 @@ export const SearchPane = () => {
             <Grid container css={inputStyling} spacing={1}>
               <Grid item><SearchIcon/></Grid>
               <Grid item css={growable}>
-                <DebouncedInput placeholder="Find me a recipe..." type="text" id="searchbox"
+                <DebouncedInput placeholder="Find me a recipe, or a chef, or a meal type..." type="text" id="searchbox"
                                 css={inputStyling}
                                 timeout={500}
                                 initialValue={searchString}
@@ -157,7 +164,7 @@ export const SearchPane = () => {
       </Grid>
 
       <Grid item style={{ width: '100%', maxHeight: '40%', marginTop: '1em', order: weHaveNoRelevantResults ? '99' : 'inherit'}}>
-        <RelatedFilters dietTypeSelected={dietTypeSelected} diets={possibleDiets}/>
+        <RelatedFilters dietTypeSelected={dietTypeSelected} chefSelected={chefSelected} chefs={possibleChefs} diets={possibleDiets}/>
       </Grid>
 
       { searchString !== "" ?
@@ -165,10 +172,7 @@ export const SearchPane = () => {
         <Suggestions forSearchTerm={searchString}
                      updateForcer={suggestionUpdateForcer}
                      showChefs={selectedChefs.length===0} //don't suggest more chefs if we already have one selected
-                     chefSelected={(profile)=>{
-                       setSelectedChefs((prev)=>prev.concat([profile]));
-                       setSearchString("");
-                     }}
+                     chefSelected={chefSelected}
                      mealTypeSelected={(mt)=>{
                        setSelectedMealTypes((prev)=>prev.concat([mt]));
                        setSearchString("");
