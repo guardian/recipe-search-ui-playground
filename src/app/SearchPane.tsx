@@ -46,9 +46,12 @@ export const SearchPane = () => {
   const [selectedChefs, setSelectedChefs] = useState<CapiProfileTag[]>([]);
   const [selectedMealTypes, setSelectedMealTypes] = useState<string[]>([]);
   const [selectedDiets, setSelectedDiets] = useState<string[]>([]);
+  const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
 
   const [possibleDiets, setPossibleDiets] = useState<StatsEntry|undefined>(undefined);
   const [possibleChefs, setPossibleChefs] = useState<StatsEntry|undefined>(undefined);
+  const [possibleCuisines, setPossibleCuisines] = useState<StatsEntry|undefined>(undefined);
+  const [possibleMealTypes, setPossibleMealTypes] = useState<StatsEntry|undefined>(undefined);
 
   const [suggestionUpdateForcer, setSuggestionUpdateForcer] = useState(0);
   const forceSuggestionUpdate = ()=>setSuggestionUpdateForcer(prev=>prev+1);
@@ -69,7 +72,9 @@ export const SearchPane = () => {
         if(result.maxScore) setMaxScore(result.maxScore);
         setResults(result.results);
         setPossibleDiets(result.stats["suitableForDietIds"]);
-        setPossibleChefs(result.stats["contributors"])
+        setPossibleChefs(result.stats["contributors"]);
+        setPossibleMealTypes(result.stats["mealTypeIds"]);
+        setPossibleCuisines(result.stats["cuisineIds"]);
         forceSuggestionUpdate();
       })
       .catch((err:Error)=>{
@@ -88,8 +93,20 @@ export const SearchPane = () => {
     setSearchString("");
   }
 
-  const chefSelected = (profile:CapiProfileTag)=>{
-    setSelectedChefs((prev)=>prev.concat([profile]));
+  const chefSelected = (profile:CapiProfileTag|undefined)=>{
+    if(profile) {
+      setSelectedChefs((prev) => prev.concat([profile]));
+      setSearchString("");
+    }
+  }
+
+  const cuisineSelected = (ct:string) =>{
+    setSelectedCuisines((prev)=>prev.concat([ct]));
+    setSearchString("");
+  }
+
+  const mealTypeSelected = (mt:string)=>{
+    setSelectedMealTypes((prev)=>prev.concat([mt]));
     setSearchString("");
   }
 
@@ -122,7 +139,7 @@ export const SearchPane = () => {
             <Grid container css={inputStyling} spacing={1}>
               <Grid item><SearchIcon/></Grid>
               <Grid item css={growable}>
-                <DebouncedInput placeholder="Find me a recipe, or a chef, or a meal type..." type="text" id="searchbox"
+                <DebouncedInput placeholder="Find me a recipe, or a chef, or a meal type, or a suggestion..." type="text" id="searchbox"
                                 css={inputStyling}
                                 timeout={500}
                                 initialValue={searchString}
@@ -137,10 +154,11 @@ export const SearchPane = () => {
               chefs={selectedChefs}
               mealTypes={selectedMealTypes}
               diets={selectedDiets}
+              cuisines={selectedCuisines}
               onChefRemoved={(chefId)=>setSelectedChefs((prev)=>prev.filter((c)=>c.id!==chefId))}
               onMealTypeRemoved={(mealId)=>setSelectedMealTypes((prev)=>prev.filter((mt)=>mt!==mealId))}
               onDietRemoved={(dietId)=>setSelectedDiets((prev)=>prev.filter(d=>d!==dietId))}
-              onUpdated={()=>{ }}
+              onCuisineRemoved={(cuisineId)=>setSelectedCuisines((prev)=>prev.filter((ct)=>ct!==cuisineId))}
             />
           </AccordionDetails>
         </Accordion>
@@ -164,7 +182,15 @@ export const SearchPane = () => {
       </Grid>
 
       <Grid item style={{ width: '100%', maxHeight: '40%', marginTop: '1em', order: weHaveNoRelevantResults ? '99' : 'inherit'}}>
-        <RelatedFilters dietTypeSelected={dietTypeSelected} chefSelected={chefSelected} chefs={possibleChefs} diets={possibleDiets}/>
+        <RelatedFilters dietTypeSelected={dietTypeSelected}
+                        chefSelected={chefSelected}
+                        cuisineSelected={cuisineSelected}
+                        mealTypeSelected={mealTypeSelected}
+                        chefs={possibleChefs}
+                        diets={possibleDiets}
+                        cuisines={possibleCuisines}
+                        mealTypes={possibleMealTypes}
+        />
       </Grid>
 
       { searchString !== "" ?
@@ -178,7 +204,7 @@ export const SearchPane = () => {
                        setSearchString("");
                      }}
                      dietTypeSelected={dietTypeSelected}
-                     cuisineSelected={(ct)=>{} }
+                     cuisineSelected={cuisineSelected}
         ></Suggestions>
       </Grid> : undefined }
 

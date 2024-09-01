@@ -7,13 +7,14 @@ const headingStyle = css`
   `;
 
 interface FullSearchFormProps {
-  onUpdated: (newChefs?:string[])=>void;
   chefs: CapiProfileTag[];
   mealTypes: string[];
   diets: string[];
+  cuisines: string[];
   onChefRemoved: (id:string)=>void;
   onMealTypeRemoved: (id:string)=>void;
   onDietRemoved: (id:string)=>void;
+  onCuisineRemoved: (id:string)=>void;
 }
 
 interface FilterElementProps<T> {
@@ -37,7 +38,7 @@ function FilterElement<T>({renderChip, heading, content}:FilterElementProps<T>) 
   </Grid>
 }
 
-export const FullSearchForm:React.FC<FullSearchFormProps> = ({onUpdated, chefs, mealTypes, diets, onChefRemoved, onMealTypeRemoved, onDietRemoved})=> {
+export const FullSearchForm:React.FC<FullSearchFormProps> = ({chefs, mealTypes, diets, cuisines, onChefRemoved, onMealTypeRemoved, onDietRemoved, onCuisineRemoved})=> {
 
 
   return <Grid container direction="row" spacing={3}>
@@ -57,10 +58,13 @@ export const FullSearchForm:React.FC<FullSearchFormProps> = ({onUpdated, chefs, 
     </Grid> : undefined }
 
     {diets.length > 0 ? <Grid item>
-      <FilterElement heading="That is" content={diets}
-                     renderChip={(dt, i)=>
-                      <Chip key={i} label={dt} onDelete={()=>onDietRemoved(dt)}/>}
-      />
+        <FilterElement heading="That is" content={diets.concat(cuisines)}
+                       renderChip={(dt, i)=>
+                        <Chip key={i} label={dt} onDelete={()=>{
+                          onDietRemoved(dt);
+                          onCuisineRemoved(dt);
+                        }}/>}
+        />
     </Grid> : undefined }
   </Grid>
 }
