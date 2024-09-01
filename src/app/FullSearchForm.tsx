@@ -57,7 +57,7 @@ export const FullSearchForm:React.FC<FullSearchFormProps> = ({chefs, mealTypes, 
       />
     </Grid> : undefined }
 
-    {diets.length > 0 ? <Grid item>
+    {diets.length + cuisines.length > 0 ? <Grid item>
         <FilterElement heading="That is" content={diets.concat(cuisines)}
                        renderChip={(dt, i)=>
                         <Chip key={i} label={dt} onDelete={()=>{
