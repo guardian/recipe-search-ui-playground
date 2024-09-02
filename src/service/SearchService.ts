@@ -21,6 +21,8 @@ interface FieldWithWeighting {
 export interface RecipeSearchFilters {
   diets?: string[]; //must be a valid diet. use keyword search to find valid values
   contributors?: string[];  //must be a valid contributor. use keyword search to find valid values
+  mealTypes?: string[];
+  cuisines?: string[];
   filterType?: "Post"|"During";
 }
 

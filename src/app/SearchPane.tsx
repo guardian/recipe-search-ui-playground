@@ -56,11 +56,17 @@ export const SearchPane = () => {
   const [suggestionUpdateForcer, setSuggestionUpdateForcer] = useState(0);
   const forceSuggestionUpdate = ()=>setSuggestionUpdateForcer(prev=>prev+1);
 
-  const getFilters:()=>RecipeSearchFilters|undefined = ()=>selectedChefs.length > 0 || selectedDiets.length > 0 ? ({
-    filterType: "Post",
-    contributors: selectedChefs.map(c=>c.id),
-    diets: selectedDiets
-  }) : undefined;
+  const getFilters:()=>RecipeSearchFilters|undefined = ()=> {
+    const chefIds = selectedChefs.map(c=>c.id);
+
+    return {
+      filterType: "Post",
+      contributors: chefIds.length === 0 ? undefined : chefIds,
+      diets: selectedDiets.length === 0 ? undefined : selectedDiets,
+      cuisines: selectedCuisines.length===0 ? undefined : selectedCuisines,
+      mealTypes: selectedMealTypes.length===0 ? undefined : selectedMealTypes
+    };
+  }
 
   useEffect(()=>{
     recipeSearch({
@@ -81,7 +87,7 @@ export const SearchPane = () => {
         console.error(err.toString())
         setLastError(err.toString())
       });
-  }, [searchString, selectedChefs, selectedDiets]);
+  }, [searchString, selectedChefs, selectedDiets, selectedMealTypes, selectedCuisines]);
 
   useEffect(()=>{
     const shouldExpand = selectedChefs.length > 0 || selectedMealTypes.length > 0 || selectedDiets.length > 0;  //TODO - add more in here as they are implemented
@@ -90,24 +96,20 @@ export const SearchPane = () => {
 
   const dietTypeSelected = (dt:string)=>{
     setSelectedDiets((prev)=>prev.concat([dt]));
-    setSearchString("");
   }
 
   const chefSelected = (profile:CapiProfileTag|undefined)=>{
     if(profile) {
       setSelectedChefs((prev) => prev.concat([profile]));
-      setSearchString("");
     }
   }
 
   const cuisineSelected = (ct:string) =>{
     setSelectedCuisines((prev)=>prev.concat([ct]));
-    setSearchString("");
   }
 
   const mealTypeSelected = (mt:string)=>{
     setSelectedMealTypes((prev)=>prev.concat([mt]));
-    setSearchString("");
   }
 
   /**
@@ -198,13 +200,22 @@ export const SearchPane = () => {
         <Suggestions forSearchTerm={searchString}
                      updateForcer={suggestionUpdateForcer}
                      showChefs={selectedChefs.length===0} //don't suggest more chefs if we already have one selected
-                     chefSelected={chefSelected}
+                     chefSelected={(p)=>{
+                       chefSelected(p);
+                       setSearchString("");
+                     }}
                      mealTypeSelected={(mt)=>{
                        setSelectedMealTypes((prev)=>prev.concat([mt]));
                        setSearchString("");
                      }}
-                     dietTypeSelected={dietTypeSelected}
-                     cuisineSelected={cuisineSelected}
+                     dietTypeSelected={(d)=>{
+                       dietTypeSelected(d);
+                       setSearchString("");
+                     }}
+                     cuisineSelected={(c)=>{
+                       cuisineSelected(c);
+                       setSearchString("");
+                     }}
         ></Suggestions>
       </Grid> : undefined }
 
