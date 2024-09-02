@@ -1,10 +1,10 @@
-import { KeywordsGenericSlice } from '../service/schema';
-import { Paper, Typography } from '@mui/material';
-import { sideScollingListItem, sideScrollingList } from './ListStyles';
+import { Paper } from '@mui/material';
+import { sideScollingListItem } from './ListStyles';
 import React from 'react';
 
-interface SuggestionComponentProps extends KeywordsGenericSlice {
+interface SuggestionComponentProps {
   title: string;
+  matches: string[]
   renderContent: (suggestion:string) => React.ReactNode;
 }
 

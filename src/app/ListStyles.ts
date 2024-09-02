@@ -3,12 +3,13 @@ import { css } from '@mui/material';
 export const sideScollingListItem = css`
     list-style: none;
       margin: 2px;
+      margin-right: 4px;
       display: inline-block;
   `;
 
 export const sideScrollingList = css`
     padding-left: 0;
-      width: max-content;
+    width: max-content;
   `;
 
 export const resultCard = css`
