@@ -129,7 +129,7 @@ export const SearchPane = () => {
   const weHaveNoRelevantResults = maxScore && maxScore < visualRelevancyCutoff && searchString!=="";
 
   return <Paper css={searchPaneBase} elevation={3}>
-    <Grid container direction="column" columns={1}>
+    <Grid container direction="column" columns={1} style={{flexFlow: "column"}}>
 
       <Grid item>
         <Accordion expanded={searchExpanded}>
