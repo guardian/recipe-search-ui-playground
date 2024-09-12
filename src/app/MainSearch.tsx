@@ -1,12 +1,9 @@
 import { Helmet } from 'react-helmet';
 import { css, CssBaseline } from '@mui/material';
 import { SearchPane } from './SearchPane';
+import { baseLayout } from './Layout';
 
 export const MainSearchComponent = () => {
-  const baseLayout = css`
-    width: 100vw;
-      height: 100vh;
-  `;
 
   return <div css={baseLayout}>
     <Helmet>
