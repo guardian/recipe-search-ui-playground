@@ -32,6 +32,7 @@ interface RecipeSearchParams {
   fields?: (string|FieldWithWeighting)[];
   filters?: RecipeSearchFilters;
   limit?: number
+  format?: "Titles"|"Full"
 }
 
 export async function recipeSearch(params:RecipeSearchParams):Promise<RecipeSearchResponse> {

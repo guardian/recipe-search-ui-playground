@@ -1,4 +1,4 @@
-import {  z } from 'zod';
+import { number, z } from 'zod';
 
 export const TitleSearchResult = z.object({
   score: z.number(),
@@ -8,6 +8,40 @@ export const TitleSearchResult = z.object({
 });
 
 export type TitleSearchResult = z.infer<typeof TitleSearchResult>;
+
+const GenericRange = z.object({
+  min: z.number(),
+  max: z.number()
+});
+const RecipeServes = z.object({
+  amount: GenericRange,
+  text: z.string().optional().nullable(),
+  unit: z.string().optional().nullable()
+});
+
+export const FullSearchDataResult = z.object({
+  score: z.number().optional().nullable(),
+  href: z.string(),
+  contributor_names: z.array(z.string()),
+  bookCredit: z.string().optional().nullable(),
+  canonicalArticle: z.string(),
+  celebrationIds: z.array(z.string()).optional().nullable(),
+  composerId: z.string().optional(),
+  contributors: z.array(z.string()),
+  cuisineIds: z.array(z.string()).optional().nullable(),
+  description: z.string(),
+  difficultyLevel: z.string().optional().nullable(),
+  id: z.string(),
+  instructions: z.array(z.string()),
+  mealTypeIds: z.array(z.string()).optional().nullable(),
+  serves: z.array(RecipeServes),
+  suitableForDietIds: z.array(z.string()).optional().nullable(),
+  //don't have data on timings right now but that should be here!
+  title: z.string(),
+  byline: z.array(z.string())
+});
+
+export type FullSearchDataResult = z.infer<typeof FullSearchDataResult>;
 
 const KeywordsGenericContent = z.object({
   hits: z.number(),
@@ -46,7 +80,7 @@ export type StatsEntry = z.infer<typeof StatsEntry>;
 export const RecipeSearchResponse = z.object({
   hits: z.number(),
   maxScore: z.number().nullable().optional(),
-  results: z.array(TitleSearchResult),
+  results: z.array(z.union([TitleSearchResult,FullSearchDataResult])),
   stats: z.record(z.string(), StatsEntry)
 });
 
