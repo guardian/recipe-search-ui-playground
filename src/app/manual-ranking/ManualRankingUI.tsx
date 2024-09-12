@@ -4,33 +4,36 @@ import { CssBaseline } from '@mui/material';
 import { baseLayout } from '../Layout';
 import { BackgroundGrid, ResultsArea, SearchSelectorArea } from './RankingUILayout';
 import { RankingSearchSelector } from './RankingSearchSelector';
-import { recipeSearch } from '../../service/SearchService';
+import { recipeSearch, RecipeSearchParams } from '../../service/SearchService';
 import { FullSearchDataResult } from '../../service/schema';
 import { RankingResults } from './RankingResults';
 
 export const ManualRankingUI:React.FC = () => {
-  const [searchPhrase, setSearchPhrase] = useState("");
   const [maxScore, setMaxScore] = useState<number|undefined>(undefined);
   const [minScore, setMinScore] = useState<number|undefined>(undefined);
   const [results, setResults] = useState<FullSearchDataResult[]>([]);
-  const [searchLimit, setSearchLimit] = useState(25);
+  const [searchInProgress, setSearchInProgress] = useState(false);
 
-  useEffect(() => {
-    if(searchPhrase==="") {
+  const runSearch = (params:RecipeSearchParams) => {
+    if(params.queryText==="") {
       setMaxScore(undefined);
       setMinScore(undefined);
       setResults([]);
     } else {
-      recipeSearch({
-        queryText: searchPhrase,
-        limit: searchLimit,
-        format: "Full"
-      }).then(response => {
-        setMaxScore(response.maxScore ?? undefined);
-        setResults(response.results as FullSearchDataResult[]);
-      })
+      setSearchInProgress(true);
+
+      recipeSearch(params)
+        .then(response => {
+          setMaxScore(response.maxScore ?? undefined);
+          setResults(response.results as FullSearchDataResult[]);
+          setSearchInProgress(false);
+        })
+        .catch(err=>{
+          console.error(err);
+          setSearchInProgress(false);
+        })
     }
-  }, [searchPhrase, searchLimit]);
+  };
 
   useEffect(() => {
     if(results.length===0) {
@@ -49,14 +52,17 @@ export const ManualRankingUI:React.FC = () => {
 
     <div css={BackgroundGrid}>
       <div css={SearchSelectorArea}>
-        <RankingSearchSelector searchPhrase={searchPhrase} onChange={setSearchPhrase}
-                               maxScore={maxScore} resultCount={results.length}
-                               limit={searchLimit} onLimitChange={setSearchLimit}
+        <RankingSearchSelector searchRequested={runSearch}
+                               maxScore={maxScore}
+                               minScore={minScore}
+                               resultCount={results.length}
         />
       </div>
 
       <div css={ResultsArea}>
-        <RankingResults results={results}/>
+        {
+          searchInProgress ? undefined : <RankingResults results={results}/>
+        }
       </div>
     </div>
   </div>

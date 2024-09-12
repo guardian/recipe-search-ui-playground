@@ -26,7 +26,7 @@ export interface RecipeSearchFilters {
   filterType?: "Post"|"During";
 }
 
-interface RecipeSearchParams {
+export interface RecipeSearchParams {
   queryText: string;
   searchType?: "Embedded"|"Match"|"Lucene";
   fields?: (string|FieldWithWeighting)[];
