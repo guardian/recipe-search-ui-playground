@@ -58,7 +58,7 @@ export const RankingResults:React.FC<RankingResultsProps> = ({results}) => {
             </Grid>
             <Grid item css={recipeGridFixed}>
               <Typography css={recipeTitle}>{entry.title}</Typography>
-              <Typography css={recipeByline}>{entry.contributor_names.join(",")} {entry.byline.join(",")}</Typography>
+              <Typography css={recipeByline}>{entry.contributor_names ? entry.contributor_names.join(",") : ""} {entry.byline ? entry.byline.join(",") : ""}</Typography>
               <Grid container css={chipHolder} spacing={1}>
                 {
                   entry.mealTypeIds?.map((mt, c)=><Chip css={chipSpacing} key={c} label={mt}/>)

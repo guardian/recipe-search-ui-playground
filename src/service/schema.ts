@@ -22,7 +22,7 @@ const RecipeServes = z.object({
 export const FullSearchDataResult = z.object({
   score: z.number().optional().nullable(),
   href: z.string(),
-  contributor_names: z.array(z.string()),
+  contributor_names: z.array(z.string()).optional().nullable(),
   bookCredit: z.string().optional().nullable(),
   canonicalArticle: z.string(),
   celebrationIds: z.array(z.string()).optional().nullable(),
@@ -38,7 +38,7 @@ export const FullSearchDataResult = z.object({
   suitableForDietIds: z.array(z.string()).optional().nullable(),
   //don't have data on timings right now but that should be here!
   title: z.string(),
-  byline: z.array(z.string())
+  byline: z.array(z.string()).optional().nullable(),
 });
 
 export type FullSearchDataResult = z.infer<typeof FullSearchDataResult>;
@@ -80,7 +80,7 @@ export type StatsEntry = z.infer<typeof StatsEntry>;
 export const RecipeSearchResponse = z.object({
   hits: z.number(),
   maxScore: z.number().nullable().optional(),
-  results: z.array(z.union([TitleSearchResult,FullSearchDataResult])),
+  results: z.array(z.union([FullSearchDataResult,TitleSearchResult])),
   stats: z.record(z.string(), StatsEntry)
 });
 

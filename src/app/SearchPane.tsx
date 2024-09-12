@@ -76,7 +76,7 @@ export const SearchPane = () => {
       .then((result)=>{
         setSearchHits(result.hits);
         if(result.maxScore) setMaxScore(result.maxScore);
-        setResults(result.results);
+        setResults(result.results as TitleSearchResult[]);
         setPossibleDiets(result.stats["suitableForDietIds"]);
         setPossibleChefs(result.stats["contributors"]);
         setPossibleMealTypes(result.stats["mealTypeIds"]);
