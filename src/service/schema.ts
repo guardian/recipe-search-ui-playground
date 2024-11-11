@@ -1,7 +1,7 @@
 import {  z } from 'zod';
 
 export const TitleSearchResult = z.object({
-  score: z.number(),
+  score: z.number().optional(),
   title: z.string(),
   href: z.string(),
   composerId: z.string()

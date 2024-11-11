@@ -21,12 +21,12 @@ export const ResultsList = ({results, showScore, scoreCutoff}:ResultsListProps) 
   const [showLessRelevant, setShowLessRelevant] = useState(false);
   const [haveLessRelevant, setHaveLessRelevant] = useState(false);
 
-  const resultsToRender = scoreCutoff && !showLessRelevant ? results.filter((r)=>r.score>scoreCutoff) : results;
+  const resultsToRender = scoreCutoff && !showLessRelevant ? results.filter((r)=>(r.score ?? 100)>scoreCutoff) : results;
 
   useEffect(() => {
     if(results.length>0) {
       const lastResult = results[results.length - 1];
-      setHaveLessRelevant(lastResult.score <= (scoreCutoff ?? 0));
+      setHaveLessRelevant((lastResult.score ?? 100) <= (scoreCutoff ?? 0));
     } else {
       setHaveLessRelevant(false);
     }
