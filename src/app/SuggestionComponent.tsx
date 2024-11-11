@@ -9,7 +9,7 @@ interface SuggestionComponentProps {
 }
 
 export const SuggestionComponent = (props:SuggestionComponentProps) => {
-  return props.matches.map(suggestion=><li css={sideScollingListItem}>
+  return props.matches.map((suggestion, ctr)=><li css={sideScollingListItem} key={ctr}>
           <Paper elevation={1}>
             {
               props.renderContent(suggestion)
