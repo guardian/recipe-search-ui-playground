@@ -4,7 +4,10 @@ export const TitleSearchResult = z.object({
   score: z.number().optional(),
   title: z.string(),
   href: z.string(),
-  composerId: z.string()
+  featuredImage: z.string().optional().nullable(),
+  contributors: z.array(z.string()).optional().nullable(),
+  byline: z.array(z.string()).optional().nullable(),
+  dietIds: z.array(z.string()).optional().nullable(),
 });
 
 export type TitleSearchResult = z.infer<typeof TitleSearchResult>;
