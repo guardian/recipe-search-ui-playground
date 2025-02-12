@@ -49,7 +49,7 @@ export type StatsEntry = z.infer<typeof StatsEntry>;
 export const RecipeSearchResponse = z.object({
   maxScore: z.number().nullable().optional(),
   results: z.array(TitleSearchResult),
-  stats: z.record(z.string(), StatsEntry)
+  stats: z.record(z.string(), StatsEntry).optional()
 });
 
 export type RecipeSearchResponse = z.infer<typeof RecipeSearchResponse>;

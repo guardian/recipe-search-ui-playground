@@ -26,9 +26,11 @@ export interface RecipeSearchFilters {
   filterType?: "Post"|"During";
 }
 
+export type SearchTypes = "Embedded"|"WeightedHybridSum"|"Match"|"Lucene";
+
 interface RecipeSearchParams {
   queryText: string;
-  searchType?: "Embedded"|"Match"|"Lucene";
+  searchType?: SearchTypes;
   fields?: (string|FieldWithWeighting)[];
   filters?: RecipeSearchFilters;
   limit?: number

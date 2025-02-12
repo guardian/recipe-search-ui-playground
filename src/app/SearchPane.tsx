@@ -1,9 +1,19 @@
-import { Accordion, AccordionDetails, AccordionSummary, css, Grid, Input, Paper, Typography } from '@mui/material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  css,
+  Grid,
+  Input, InputLabel, MenuItem,
+  Paper,
+  Select,
+  Typography
+} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { DebouncedInput } from './DebouncedInput';
 import { useEffect, useState } from 'react';
 import { ExpandMore, Label } from '@mui/icons-material';
-import { genericKeywordSearch, recipeSearch, RecipeSearchFilters } from '../service/SearchService';
+import { genericKeywordSearch, recipeSearch, RecipeSearchFilters, SearchTypes } from '../service/SearchService';
 import { CapiProfileTag, StatsEntry, TitleSearchResult } from '../service/schema';
 import { ResultsList } from './ResultsList';
 import { Suggestions } from './Suggestions';
@@ -28,6 +38,7 @@ export const SearchPane = () => {
   const inputStyling = css`
     height: fit-content;
       width:100%;
+      align-items: center;
   `;
 
   const growable = css`
@@ -39,7 +50,6 @@ export const SearchPane = () => {
 
   const [searchExpanded, setSearchExpanded] = useState(false);
 
-  const [searchHits, setSearchHits] = useState(0);
   const [maxScore, setMaxScore] = useState(0);
   const [results, setResults] = useState<TitleSearchResult[]>([]);
 
@@ -52,6 +62,8 @@ export const SearchPane = () => {
   const [possibleChefs, setPossibleChefs] = useState<StatsEntry|undefined>(undefined);
   const [possibleCuisines, setPossibleCuisines] = useState<StatsEntry|undefined>(undefined);
   const [possibleMealTypes, setPossibleMealTypes] = useState<StatsEntry|undefined>(undefined);
+
+  const [searchMode, setSearchMode] = useState<SearchTypes>("Embedded");
 
   const [suggestionUpdateForcer, setSuggestionUpdateForcer] = useState(0);
   const forceSuggestionUpdate = ()=>setSuggestionUpdateForcer(prev=>prev+1);
@@ -71,10 +83,10 @@ export const SearchPane = () => {
   useEffect(()=>{
     recipeSearch({
       queryText: searchString,
+      searchType: searchMode,
       filters: getFilters(),
     })
       .then((result)=>{
-        setSearchHits(result.hits);
         if(result.maxScore) setMaxScore(result.maxScore);
         setResults(result.results);
         setPossibleDiets(result.stats["suitableForDietIds"]);
@@ -87,7 +99,7 @@ export const SearchPane = () => {
         console.error(err.toString())
         setLastError(err.toString())
       });
-  }, [searchString, selectedChefs, selectedDiets, selectedMealTypes, selectedCuisines]);
+  }, [searchString, selectedChefs, selectedDiets, selectedMealTypes, selectedCuisines, searchMode]);
 
   useEffect(()=>{
     const shouldExpand = selectedChefs.length > 0 || selectedMealTypes.length > 0 || selectedDiets.length > 0;  //TODO - add more in here as they are implemented
@@ -149,6 +161,14 @@ export const SearchPane = () => {
                                   setSearchString(term);
                                 }}
                 /></Grid>
+              <Grid item>
+                <Select id="modeSelector" value={searchMode} onChange={(evt)=>setSearchMode(evt.target.value as SearchTypes)}>
+                  <MenuItem value="Embedded">Embedded</MenuItem>
+                  <MenuItem value="WeightedHybridSum">Hybrid</MenuItem>
+                  <MenuItem value="Lucene">Lucene</MenuItem>
+                  <MenuItem value="Match">Text match</MenuItem>
+                </Select>
+              </Grid>
             </Grid>
           </AccordionSummary>
           <AccordionDetails>
