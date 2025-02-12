@@ -177,7 +177,7 @@ export const SearchPane = () => {
           {
             weHaveNoRelevantResults ?
               <Typography>We couldn't find any recipes that seemed very relevant, but here are some that might interest you</Typography> :
-              <Typography>We found {searchHits} recipes that might interest you...</Typography>
+              <Typography>These recipes might interest you...</Typography>
           }
         </span>
         <ResultsList results={results} showScore scoreCutoff={effectiveCutoff()}/>

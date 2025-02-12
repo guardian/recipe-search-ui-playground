@@ -47,7 +47,6 @@ export const StatsEntry = z.object({
 export type StatsEntry = z.infer<typeof StatsEntry>;
 
 export const RecipeSearchResponse = z.object({
-  hits: z.number(),
   maxScore: z.number().nullable().optional(),
   results: z.array(TitleSearchResult),
   stats: z.record(z.string(), StatsEntry)
