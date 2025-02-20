@@ -4,7 +4,7 @@ import {
   AccordionSummary, Alert,
   css,
   Grid, IconButton,
-  Input, InputLabel, MenuItem,
+  Input, InputLabel, LinearProgress, MenuItem,
   Paper,
   Select, Snackbar,
   Typography
@@ -65,6 +65,8 @@ export const SearchPane = () => {
 
   const [searchMode, setSearchMode] = useState<SearchTypes>("Embedded");
 
+  const [loading, setLoading] = useState(false);
+
   const [suggestionUpdateForcer, setSuggestionUpdateForcer] = useState(0);
   const forceSuggestionUpdate = ()=>setSuggestionUpdateForcer(prev=>prev+1);
 
@@ -81,6 +83,7 @@ export const SearchPane = () => {
   }
 
   useEffect(()=>{
+    setLoading(true);
     recipeSearch({
       queryText: searchString,
       searchType: searchMode,
@@ -94,10 +97,12 @@ export const SearchPane = () => {
         setPossibleMealTypes(result.stats["mealTypeIds"]);
         setPossibleCuisines(result.stats["cuisineIds"]);
         forceSuggestionUpdate();
+        setLoading(false);
       })
       .catch((err:Error)=>{
         console.error(err.toString())
-        setLastError(err.toString())
+        setLastError(err.toString());
+        setLoading(false);
       });
   }, [searchString, selectedChefs, selectedDiets, selectedMealTypes, selectedCuisines, searchMode]);
 
@@ -191,6 +196,9 @@ export const SearchPane = () => {
             />
           </AccordionDetails>
         </Accordion>
+        {
+          loading ? <LinearProgress style={{width: "100%"}}/> : undefined
+        }
       </Grid>
 
       <Grid item style={{
