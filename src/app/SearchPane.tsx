@@ -1,18 +1,18 @@
 import {
   Accordion,
   AccordionDetails,
-  AccordionSummary,
+  AccordionSummary, Alert,
   css,
-  Grid,
+  Grid, IconButton,
   Input, InputLabel, MenuItem,
   Paper,
-  Select,
+  Select, Snackbar,
   Typography
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { DebouncedInput } from './DebouncedInput';
 import { useEffect, useState } from 'react';
-import { ExpandMore, Label } from '@mui/icons-material';
+import { Close, Error, ExpandMore, Label } from '@mui/icons-material';
 import { genericKeywordSearch, recipeSearch, RecipeSearchFilters, SearchTypes } from '../service/SearchService';
 import { CapiProfileTag, StatsEntry, TitleSearchResult } from '../service/schema';
 import { ResultsList } from './ResultsList';
@@ -141,6 +141,13 @@ export const SearchPane = () => {
   const weHaveNoRelevantResults = maxScore && maxScore < visualRelevancyCutoff && searchString!=="";
 
   return <Paper css={searchPaneBase} elevation={3}>
+    {
+      lastError ? <Snackbar open={true} autoHideDuration={30000} onClose={()=>setLastError(undefined)}>
+        <Alert severity="error" icon={<Error/>}>
+          {lastError} <IconButton onClick={()=>setLastError(undefined)}><Close/></IconButton>
+        </Alert>
+      </Snackbar> : undefined
+    }
     <Grid container direction="column" columns={1} style={{flexFlow: "column"}}>
 
       <Grid item>
