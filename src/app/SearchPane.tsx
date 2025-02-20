@@ -1,18 +1,18 @@
 import {
   Accordion,
   AccordionDetails,
-  AccordionSummary,
+  AccordionSummary, Alert,
   css,
-  Grid,
-  Input, InputLabel, MenuItem,
+  Grid, IconButton,
+  Input, InputLabel, LinearProgress, MenuItem,
   Paper,
-  Select,
+  Select, Snackbar,
   Typography
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { DebouncedInput } from './DebouncedInput';
 import { useEffect, useState } from 'react';
-import { ExpandMore, Label } from '@mui/icons-material';
+import { Close, Error, ExpandMore, Label } from '@mui/icons-material';
 import { genericKeywordSearch, recipeSearch, RecipeSearchFilters, SearchTypes } from '../service/SearchService';
 import { CapiProfileTag, StatsEntry, TitleSearchResult } from '../service/schema';
 import { ResultsList } from './ResultsList';
@@ -65,6 +65,8 @@ export const SearchPane = () => {
 
   const [searchMode, setSearchMode] = useState<SearchTypes>("Embedded");
 
+  const [loading, setLoading] = useState(false);
+
   const [suggestionUpdateForcer, setSuggestionUpdateForcer] = useState(0);
   const forceSuggestionUpdate = ()=>setSuggestionUpdateForcer(prev=>prev+1);
 
@@ -81,6 +83,7 @@ export const SearchPane = () => {
   }
 
   useEffect(()=>{
+    setLoading(true);
     recipeSearch({
       queryText: searchString,
       searchType: searchMode,
@@ -94,10 +97,12 @@ export const SearchPane = () => {
         setPossibleMealTypes(result.stats["mealTypeIds"]);
         setPossibleCuisines(result.stats["cuisineIds"]);
         forceSuggestionUpdate();
+        setLoading(false);
       })
       .catch((err:Error)=>{
         console.error(err.toString())
-        setLastError(err.toString())
+        setLastError(err.toString());
+        setLoading(false);
       });
   }, [searchString, selectedChefs, selectedDiets, selectedMealTypes, selectedCuisines, searchMode]);
 
@@ -141,6 +146,13 @@ export const SearchPane = () => {
   const weHaveNoRelevantResults = maxScore && maxScore < visualRelevancyCutoff && searchString!=="";
 
   return <Paper css={searchPaneBase} elevation={3}>
+    {
+      lastError ? <Snackbar open={true} autoHideDuration={30000} onClose={()=>setLastError(undefined)}>
+        <Alert severity="error" icon={<Error/>}>
+          {lastError} <IconButton onClick={()=>setLastError(undefined)}><Close/></IconButton>
+        </Alert>
+      </Snackbar> : undefined
+    }
     <Grid container direction="column" columns={1} style={{flexFlow: "column"}}>
 
       <Grid item>
@@ -184,6 +196,9 @@ export const SearchPane = () => {
             />
           </AccordionDetails>
         </Accordion>
+        {
+          loading ? <LinearProgress style={{width: "100%"}}/> : undefined
+        }
       </Grid>
 
       <Grid item style={{
