@@ -19,6 +19,7 @@ import { ResultsList } from './ResultsList';
 import { Suggestions } from './Suggestions';
 import { FullSearchForm } from './FullSearchForm';
 import { RelatedFilters } from './RelatedFilters';
+import emptyPlateImg from '../assets/plate-knife-fork.png';
 
 export const SearchPane = () => {
   const searchPaneBase = css`
@@ -41,6 +42,15 @@ export const SearchPane = () => {
 
   const growable = css`
     flex-grow: 1;
+  `;
+
+  const noContentPlaceholder = css`
+    max-height: 400px;
+      max-width: fit-content;
+      width: fit-content;
+      margin-left:auto;
+      margin-right: auto;
+      display: block;
   `;
 
   const [searchString, setSearchString] = useState("");
@@ -227,16 +237,22 @@ export const SearchPane = () => {
         maxHeight: '40%',
         marginTop: '0.4em',
         overflow: 'auto',
-        order: weHaveNoRelevantResults ? '90' : 'inherit'
+        order: results.length > 0 ? weHaveNoRelevantResults ? '90' : 'inherit' : '0'
       }}>
         <span>
           {
-            weHaveNoRelevantResults ?
-              <Typography>We couldn't find any recipes that seemed very relevant, but here are some that might interest you</Typography> :
-              <Typography>These recipes might interest you...</Typography>
+            results.length > 0 ?
+              weHaveNoRelevantResults ?
+                <Typography>We couldn't find any recipes that seemed very relevant, but here are some that might interest you</Typography> :
+                <Typography>These recipes might interest you...</Typography> :
+              <Typography>We couldn't find any recipes that seem relevant to your search 😲</Typography>
           }
         </span>
-        <ResultsList results={results} showScore scoreCutoff={effectiveCutoff()}/>
+        {
+          results.length > 0 ? <ResultsList results={results} showScore scoreCutoff={effectiveCutoff()}/> :
+            <img src={emptyPlateImg} alt="image of an empty plate" css={noContentPlaceholder}/>
+        }
+
       </Grid>
 
       <Grid item style={{ width: '100%', maxHeight: '40%', marginTop: '1em', order: weHaveNoRelevantResults ? '99' : 'inherit'}}>
