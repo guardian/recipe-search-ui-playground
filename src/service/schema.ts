@@ -13,7 +13,6 @@ export const TitleSearchResult = z.object({
 export type TitleSearchResult = z.infer<typeof TitleSearchResult>;
 
 const KeywordsGenericContent = z.object({
-  hits: z.number(),
   maxScore: z.number().nullable().optional(),
   results: z.array(TitleSearchResult)
 });

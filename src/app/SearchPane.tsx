@@ -4,7 +4,7 @@ import {
   AccordionSummary, Alert,
   css,
   Grid, IconButton,
-  Input, InputLabel, LinearProgress, MenuItem,
+  LinearProgress, MenuItem,
   Paper,
   Select, Snackbar,
   Typography
@@ -12,15 +12,13 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { DebouncedInput } from './DebouncedInput';
 import { useEffect, useState } from 'react';
-import { Close, Error, ExpandMore, Label } from '@mui/icons-material';
-import { genericKeywordSearch, recipeSearch, RecipeSearchFilters, SearchTypes } from '../service/SearchService';
+import { Close, Error, ExpandMore } from '@mui/icons-material';
+import { recipeSearch, RecipeSearchFilters, SearchTypes } from '../service/SearchService';
 import { CapiProfileTag, StatsEntry, TitleSearchResult } from '../service/schema';
 import { ResultsList } from './ResultsList';
 import { Suggestions } from './Suggestions';
 import { FullSearchForm } from './FullSearchForm';
 import { RelatedFilters } from './RelatedFilters';
-
-const visualRelevancyCutoff = 0.75;
 
 export const SearchPane = () => {
   const searchPaneBase = css`
@@ -58,6 +56,11 @@ export const SearchPane = () => {
   const [selectedDiets, setSelectedDiets] = useState<string[]>([]);
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
 
+  //visualRelevancyCutoff is the score below which a match is treated as unreliable
+  //visualHardCutoff is the score below which is definitely noise and should not be displayed
+  const [visualRelevancyCutoff, setVisualRelevancyCutoff] = useState(0.7);
+  const [visualHardCutoff, setVisualHardCutoff] = useState(0.6);
+
   const [possibleDiets, setPossibleDiets] = useState<StatsEntry|undefined>(undefined);
   const [possibleChefs, setPossibleChefs] = useState<StatsEntry|undefined>(undefined);
   const [possibleCuisines, setPossibleCuisines] = useState<StatsEntry|undefined>(undefined);
@@ -82,6 +85,23 @@ export const SearchPane = () => {
     };
   }
 
+  useEffect(() => {
+    //TODO - temporary fix - the server should be giving us this information
+    switch(searchMode) {
+      case "Embedded":
+        setVisualRelevancyCutoff(0.7);
+        setVisualHardCutoff(0.6)
+        break;
+      case "WeightedHybridSum":
+        setVisualRelevancyCutoff(0.5);
+        setVisualHardCutoff(0.4);
+        break;
+      default:
+        setVisualRelevancyCutoff(0);
+        setVisualHardCutoff(0);
+    }
+  }, [searchMode]);
+
   useEffect(()=>{
     setLoading(true);
     recipeSearch({
@@ -92,10 +112,10 @@ export const SearchPane = () => {
       .then((result)=>{
         if(result.maxScore) setMaxScore(result.maxScore);
         setResults(result.results);
-        setPossibleDiets(result.stats["suitableForDietIds"]);
-        setPossibleChefs(result.stats["contributors"]);
-        setPossibleMealTypes(result.stats["mealTypeIds"]);
-        setPossibleCuisines(result.stats["cuisineIds"]);
+        setPossibleDiets(result.stats? result.stats["suitableForDietIds"] : undefined);
+        setPossibleChefs(result.stats? result.stats["contributors"] : undefined);
+        setPossibleMealTypes(result.stats? result.stats["mealTypeIds"] : undefined);
+        setPossibleCuisines(result.stats? result.stats["cuisineIds"] : undefined);
         forceSuggestionUpdate();
         setLoading(false);
       })
@@ -107,7 +127,8 @@ export const SearchPane = () => {
   }, [searchString, selectedChefs, selectedDiets, selectedMealTypes, selectedCuisines, searchMode]);
 
   useEffect(()=>{
-    const shouldExpand = selectedChefs.length > 0 || selectedMealTypes.length > 0 || selectedDiets.length > 0;  //TODO - add more in here as they are implemented
+    //TODO - add more in here as they are implemented
+    const shouldExpand = selectedChefs.length > 0 || selectedMealTypes.length > 0 || selectedDiets.length > 0;
     setSearchExpanded(shouldExpand);
   }, [selectedChefs, selectedMealTypes, selectedDiets])
 
@@ -140,7 +161,7 @@ export const SearchPane = () => {
     if(!searchString || searchString==="") {
       return 0;
     }
-    return (maxScore && maxScore  > visualRelevancyCutoff) ? visualRelevancyCutoff : 0.6
+    return (maxScore && maxScore  > visualRelevancyCutoff) ? visualRelevancyCutoff : visualHardCutoff
   }
 
   const weHaveNoRelevantResults = maxScore && maxScore < visualRelevancyCutoff && searchString!=="";
@@ -251,6 +272,7 @@ export const SearchPane = () => {
                        cuisineSelected(c);
                        setSearchString("");
                      }}
+                     errorCb={setLastError}
         ></Suggestions>
       </Grid> : undefined }
 

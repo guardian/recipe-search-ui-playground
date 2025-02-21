@@ -16,10 +16,10 @@ interface SuggestionsProps {
   dietTypeSelected: (item:string)=>void;
   mealTypeSelected: (item:string)=>void;
   showChefs: boolean;
+  errorCb: (err:string)=>void;
 }
 
-export const Suggestions = ({forSearchTerm, updateForcer, showChefs, chefSelected, cuisineSelected, dietTypeSelected, mealTypeSelected}:SuggestionsProps) => {
-  const [lastError, setLastError] = useState("");
+export const Suggestions = ({forSearchTerm, updateForcer, showChefs, chefSelected, cuisineSelected, dietTypeSelected, mealTypeSelected, errorCb}:SuggestionsProps) => {
   const [chefSuggestions, setChefSuggestions] = useState<KeywordsGenericSlice|undefined>();
   const [cuisineSuggestions, setCuisineSuggestions] = useState<KeywordsGenericSlice|undefined>();
   const [dietTypeSuggestions, setDietTypeSuggestions] = useState<KeywordsGenericSlice|undefined>();
@@ -33,7 +33,7 @@ export const Suggestions = ({forSearchTerm, updateForcer, showChefs, chefSelecte
         setDietTypeSuggestions(results.suitableForDietIds);
         setMealTypeSuggestions(results.mealTypeIds);
       })
-      .catch((err:Error)=>setLastError(err.toString()))
+      .catch((err:Error)=>errorCb(err.toString()))
   }, [forSearchTerm, updateForcer]);
 
   const clickedSuggestion = ()=>{
