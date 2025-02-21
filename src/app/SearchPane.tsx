@@ -1,12 +1,12 @@
 import {
   Accordion,
   AccordionDetails,
-  AccordionSummary, Alert,
-  css,
+  AccordionSummary, Alert, Checkbox,
+  css, FormControlLabel,
   Grid, IconButton,
   LinearProgress, MenuItem,
   Paper,
-  Select, Snackbar,
+  Select, Snackbar, Tooltip,
   Typography
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -71,6 +71,8 @@ export const SearchPane = () => {
   const [visualRelevancyCutoff, setVisualRelevancyCutoff] = useState(0.7);
   const [visualHardCutoff, setVisualHardCutoff] = useState(0.6);
 
+  const [enableServerSideCutoff, setEnableServerSideCutoff] = useState(true);
+
   const [possibleDiets, setPossibleDiets] = useState<StatsEntry|undefined>(undefined);
   const [possibleChefs, setPossibleChefs] = useState<StatsEntry|undefined>(undefined);
   const [possibleCuisines, setPossibleCuisines] = useState<StatsEntry|undefined>(undefined);
@@ -100,23 +102,24 @@ export const SearchPane = () => {
     switch(searchMode) {
       case "Embedded":
         setVisualRelevancyCutoff(0.7);
-        setVisualHardCutoff(0.6)
+        setVisualHardCutoff(enableServerSideCutoff ? 0.6 : 0)
         break;
       case "WeightedHybridSum":
         setVisualRelevancyCutoff(0.5);
-        setVisualHardCutoff(0.4);
+        setVisualHardCutoff(enableServerSideCutoff ? 0.4 : 0);
         break;
       default:
         setVisualRelevancyCutoff(0);
         setVisualHardCutoff(0);
     }
-  }, [searchMode]);
+  }, [searchMode, enableServerSideCutoff]);
 
   useEffect(()=>{
     setLoading(true);
     recipeSearch({
       queryText: searchString,
       searchType: searchMode,
+      enableCutOff: enableServerSideCutoff,
       filters: getFilters(),
     })
       .then((result)=>{
@@ -134,7 +137,7 @@ export const SearchPane = () => {
         setLastError(err.toString());
         setLoading(false);
       });
-  }, [searchString, selectedChefs, selectedDiets, selectedMealTypes, selectedCuisines, searchMode]);
+  }, [searchString, selectedChefs, selectedDiets, selectedMealTypes, selectedCuisines, searchMode, enableServerSideCutoff]);
 
   useEffect(()=>{
     //TODO - add more in here as they are implemented
@@ -225,6 +228,14 @@ export const SearchPane = () => {
               onDietRemoved={(dietId)=>setSelectedDiets((prev)=>prev.filter(d=>d!==dietId))}
               onCuisineRemoved={(cuisineId)=>setSelectedCuisines((prev)=>prev.filter((ct)=>ct!==cuisineId))}
             />
+            <Tooltip title="Uncheck this to display everything regardless of whether it's junk">
+              <FormControlLabel
+                label="Hide irrelevant results"
+                control={<Checkbox
+                  checked={enableServerSideCutoff}
+                  onChange={(evt)=>setEnableServerSideCutoff(evt.target.checked)}/>}
+              />
+            </Tooltip>
           </AccordionDetails>
         </Accordion>
         {
