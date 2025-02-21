@@ -29,7 +29,8 @@ export const KeywordsGenericSearchResponse = z.object({
   contributor_names: KeywordsGenericSlice,
   cuisineIds: KeywordsGenericSlice,
   byline: KeywordsGenericSlice,
-  mealTypeIds: KeywordsGenericSlice
+  mealTypeIds: KeywordsGenericSlice,
+  "celebrationIds.keyword": KeywordsGenericSlice
 });
 
 export type KeywordsGenericSearchResponse = z.infer<typeof KeywordsGenericSearchResponse>;

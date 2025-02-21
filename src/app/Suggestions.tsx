@@ -6,7 +6,7 @@ import { SuggestionComponent } from './SuggestionComponent';
 import { ProfileCard } from './ProfileCard';
 import { sideScrollingList } from './ListStyles';
 import { ResultCard } from './ResultCard';
-import { DinnerDining, Flaky, RestaurantMenu } from '@mui/icons-material';
+import { Celebration, DinnerDining, Flaky, RestaurantMenu } from '@mui/icons-material';
 
 interface SuggestionsProps {
   forSearchTerm: string;
@@ -24,6 +24,7 @@ export const Suggestions = ({forSearchTerm, updateForcer, showChefs, chefSelecte
   const [cuisineSuggestions, setCuisineSuggestions] = useState<KeywordsGenericSlice|undefined>();
   const [dietTypeSuggestions, setDietTypeSuggestions] = useState<KeywordsGenericSlice|undefined>();
   const [mealTypeSuggestions, setMealTypeSuggestions] = useState<KeywordsGenericSlice|undefined>();
+  const [celebrationSuggestions, setCelebrationSuggestions] = useState<KeywordsGenericSlice|undefined>();
 
   useEffect(()=>{
     genericKeywordSearch(forSearchTerm)
@@ -32,6 +33,7 @@ export const Suggestions = ({forSearchTerm, updateForcer, showChefs, chefSelecte
         setCuisineSuggestions(results.cuisineIds);
         setDietTypeSuggestions(results.suitableForDietIds);
         setMealTypeSuggestions(results.mealTypeIds);
+        setCelebrationSuggestions(results["celebrationIds.keyword"]);
       })
       .catch((err:Error)=>errorCb(err.toString()))
   }, [forSearchTerm, updateForcer]);
@@ -43,7 +45,8 @@ export const Suggestions = ({forSearchTerm, updateForcer, showChefs, chefSelecte
     (chefSuggestions && chefSuggestions.matches.length>0) ||
     (cuisineSuggestions && cuisineSuggestions.matches.length>0) ||
     (dietTypeSuggestions && dietTypeSuggestions.matches.length>0) ||
-    (mealTypeSuggestions && mealTypeSuggestions.matches.length>0)
+    (mealTypeSuggestions && mealTypeSuggestions.matches.length>0) ||
+    (celebrationSuggestions && celebrationSuggestions.matches.length>0)
 
   return haveContent() ? <>
       {
@@ -57,6 +60,12 @@ export const Suggestions = ({forSearchTerm, updateForcer, showChefs, chefSelecte
             {...chefSuggestions}
             renderContent={(profileId)=><ProfileCard profileId={profileId} onClick={chefSelected}/> }
           /> : undefined }
+          {celebrationSuggestions && celebrationSuggestions.matches.length > 0 ? <SuggestionComponent
+              title="Celebrations"
+              {...celebrationSuggestions}
+              renderContent={(type)=><ResultCard capitalize onClick={()=>{}} title={type} icon={<Celebration/>}/>}
+            /> : undefined }
+
           {mealTypeSuggestions && mealTypeSuggestions.matches.length > 0 ? <SuggestionComponent
               title="Meals"
               {...mealTypeSuggestions}
