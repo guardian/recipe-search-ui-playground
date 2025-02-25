@@ -1,26 +1,25 @@
 import {
   Accordion,
   AccordionDetails,
-  AccordionSummary, Alert,
-  css,
+  AccordionSummary, Alert, Checkbox,
+  css, FormControlLabel,
   Grid, IconButton,
-  Input, InputLabel, LinearProgress, MenuItem,
+  LinearProgress, MenuItem,
   Paper,
-  Select, Snackbar,
+  Select, Snackbar, Tooltip,
   Typography
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { DebouncedInput } from './DebouncedInput';
 import { useEffect, useState } from 'react';
-import { Close, Error, ExpandMore, Label } from '@mui/icons-material';
-import { genericKeywordSearch, recipeSearch, RecipeSearchFilters, SearchTypes } from '../service/SearchService';
+import { Close, Error, ExpandMore } from '@mui/icons-material';
+import { recipeSearch, RecipeSearchFilters, SearchTypes } from '../service/SearchService';
 import { CapiProfileTag, StatsEntry, TitleSearchResult } from '../service/schema';
 import { ResultsList } from './ResultsList';
 import { Suggestions } from './Suggestions';
 import { FullSearchForm } from './FullSearchForm';
 import { RelatedFilters } from './RelatedFilters';
-
-const visualRelevancyCutoff = 0.75;
+import emptyPlateImg from '../assets/plate-knife-fork.png';
 
 export const SearchPane = () => {
   const searchPaneBase = css`
@@ -45,6 +44,15 @@ export const SearchPane = () => {
     flex-grow: 1;
   `;
 
+  const noContentPlaceholder = css`
+    max-height: 400px;
+      max-width: fit-content;
+      width: fit-content;
+      margin-left:auto;
+      margin-right: auto;
+      display: block;
+  `;
+
   const [searchString, setSearchString] = useState("");
   const [lastError, setLastError] = useState<string|undefined>();
 
@@ -58,12 +66,19 @@ export const SearchPane = () => {
   const [selectedDiets, setSelectedDiets] = useState<string[]>([]);
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
 
+  //visualRelevancyCutoff is the score below which a match is treated as unreliable
+  //visualHardCutoff is the score below which is definitely noise and should not be displayed
+  const [visualRelevancyCutoff, setVisualRelevancyCutoff] = useState(0.6);
+  const [visualHardCutoff, setVisualHardCutoff] = useState(0.5);
+
+  const [enableServerSideCutoff, setEnableServerSideCutoff] = useState(true);
+
   const [possibleDiets, setPossibleDiets] = useState<StatsEntry|undefined>(undefined);
   const [possibleChefs, setPossibleChefs] = useState<StatsEntry|undefined>(undefined);
   const [possibleCuisines, setPossibleCuisines] = useState<StatsEntry|undefined>(undefined);
   const [possibleMealTypes, setPossibleMealTypes] = useState<StatsEntry|undefined>(undefined);
 
-  const [searchMode, setSearchMode] = useState<SearchTypes>("Embedded");
+  const [searchMode, setSearchMode] = useState<SearchTypes>("WeightedHybridSum");
 
   const [loading, setLoading] = useState(false);
 
@@ -82,20 +97,38 @@ export const SearchPane = () => {
     };
   }
 
+  useEffect(() => {
+    //TODO - temporary fix - the server should be giving us this information
+    switch(searchMode) {
+      case "Embedded":
+        setVisualRelevancyCutoff(0.7);
+        setVisualHardCutoff(enableServerSideCutoff ? 0.6 : 0)
+        break;
+      case "WeightedHybridSum":
+        setVisualRelevancyCutoff(0.5);
+        setVisualHardCutoff(enableServerSideCutoff ? 0.4 : 0);
+        break;
+      default:
+        setVisualRelevancyCutoff(0);
+        setVisualHardCutoff(0);
+    }
+  }, [searchMode, enableServerSideCutoff]);
+
   useEffect(()=>{
     setLoading(true);
     recipeSearch({
       queryText: searchString,
       searchType: searchMode,
+      enableCutOff: enableServerSideCutoff,
       filters: getFilters(),
     })
       .then((result)=>{
         if(result.maxScore) setMaxScore(result.maxScore);
         setResults(result.results);
-        setPossibleDiets(result.stats["suitableForDietIds"]);
-        setPossibleChefs(result.stats["contributors"]);
-        setPossibleMealTypes(result.stats["mealTypeIds"]);
-        setPossibleCuisines(result.stats["cuisineIds"]);
+        setPossibleDiets(result.stats? result.stats["suitableForDietIds"] : undefined);
+        setPossibleChefs(result.stats? result.stats["contributors"] : undefined);
+        setPossibleMealTypes(result.stats? result.stats["mealTypeIds"] : undefined);
+        setPossibleCuisines(result.stats? result.stats["cuisineIds"] : undefined);
         forceSuggestionUpdate();
         setLoading(false);
       })
@@ -104,10 +137,11 @@ export const SearchPane = () => {
         setLastError(err.toString());
         setLoading(false);
       });
-  }, [searchString, selectedChefs, selectedDiets, selectedMealTypes, selectedCuisines, searchMode]);
+  }, [searchString, selectedChefs, selectedDiets, selectedMealTypes, selectedCuisines, searchMode, enableServerSideCutoff]);
 
   useEffect(()=>{
-    const shouldExpand = selectedChefs.length > 0 || selectedMealTypes.length > 0 || selectedDiets.length > 0;  //TODO - add more in here as they are implemented
+    //TODO - add more in here as they are implemented
+    const shouldExpand = selectedChefs.length > 0 || selectedMealTypes.length > 0 || selectedDiets.length > 0;
     setSearchExpanded(shouldExpand);
   }, [selectedChefs, selectedMealTypes, selectedDiets])
 
@@ -140,7 +174,7 @@ export const SearchPane = () => {
     if(!searchString || searchString==="") {
       return 0;
     }
-    return (maxScore && maxScore  > visualRelevancyCutoff) ? visualRelevancyCutoff : 0.6
+    return (maxScore && maxScore  > visualRelevancyCutoff) ? visualRelevancyCutoff : visualHardCutoff
   }
 
   const weHaveNoRelevantResults = maxScore && maxScore < visualRelevancyCutoff && searchString!=="";
@@ -194,6 +228,14 @@ export const SearchPane = () => {
               onDietRemoved={(dietId)=>setSelectedDiets((prev)=>prev.filter(d=>d!==dietId))}
               onCuisineRemoved={(cuisineId)=>setSelectedCuisines((prev)=>prev.filter((ct)=>ct!==cuisineId))}
             />
+            <Tooltip title="Uncheck this to display everything regardless of whether it's junk">
+              <FormControlLabel
+                label="Hide irrelevant results"
+                control={<Checkbox
+                  checked={enableServerSideCutoff}
+                  onChange={(evt)=>setEnableServerSideCutoff(evt.target.checked)}/>}
+              />
+            </Tooltip>
           </AccordionDetails>
         </Accordion>
         {
@@ -206,16 +248,22 @@ export const SearchPane = () => {
         maxHeight: '40%',
         marginTop: '0.4em',
         overflow: 'auto',
-        order: weHaveNoRelevantResults ? '90' : 'inherit'
+        order: results.length > 0 ? weHaveNoRelevantResults ? '90' : 'inherit' : '0'
       }}>
         <span>
           {
-            weHaveNoRelevantResults ?
-              <Typography>We couldn't find any recipes that seemed very relevant, but here are some that might interest you</Typography> :
-              <Typography>These recipes might interest you...</Typography>
+            results.length > 0 ?
+              weHaveNoRelevantResults ?
+                <Typography>We couldn't find any recipes that seemed very relevant, but here are some that might interest you</Typography> :
+                <Typography>These recipes might interest you...</Typography> :
+              <Typography>We couldn't find any recipes that seem relevant to your search 😲</Typography>
           }
         </span>
-        <ResultsList results={results} showScore scoreCutoff={effectiveCutoff()}/>
+        {
+          results.length > 0 ? <ResultsList results={results} showScore scoreCutoff={effectiveCutoff()}/> :
+            <img src={emptyPlateImg} alt="image of an empty plate" css={noContentPlaceholder}/>
+        }
+
       </Grid>
 
       <Grid item style={{ width: '100%', maxHeight: '40%', marginTop: '1em', order: weHaveNoRelevantResults ? '99' : 'inherit'}}>
@@ -251,6 +299,7 @@ export const SearchPane = () => {
                        cuisineSelected(c);
                        setSearchString("");
                      }}
+                     errorCb={setLastError}
         ></Suggestions>
       </Grid> : undefined }
 

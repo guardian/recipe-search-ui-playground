@@ -33,6 +33,7 @@ interface RecipeSearchParams {
   searchType?: SearchTypes;
   fields?: (string|FieldWithWeighting)[];
   filters?: RecipeSearchFilters;
+  enableCutOff?: boolean;
   limit?: number
 }
 

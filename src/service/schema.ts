@@ -13,7 +13,6 @@ export const TitleSearchResult = z.object({
 export type TitleSearchResult = z.infer<typeof TitleSearchResult>;
 
 const KeywordsGenericContent = z.object({
-  hits: z.number(),
   maxScore: z.number().nullable().optional(),
   results: z.array(TitleSearchResult)
 });
@@ -30,7 +29,8 @@ export const KeywordsGenericSearchResponse = z.object({
   contributor_names: KeywordsGenericSlice,
   cuisineIds: KeywordsGenericSlice,
   byline: KeywordsGenericSlice,
-  mealTypeIds: KeywordsGenericSlice
+  mealTypeIds: KeywordsGenericSlice,
+  "celebrationIds.keyword": KeywordsGenericSlice
 });
 
 export type KeywordsGenericSearchResponse = z.infer<typeof KeywordsGenericSearchResponse>;
