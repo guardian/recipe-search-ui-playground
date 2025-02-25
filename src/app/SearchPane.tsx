@@ -68,8 +68,8 @@ export const SearchPane = () => {
 
   //visualRelevancyCutoff is the score below which a match is treated as unreliable
   //visualHardCutoff is the score below which is definitely noise and should not be displayed
-  const [visualRelevancyCutoff, setVisualRelevancyCutoff] = useState(0.7);
-  const [visualHardCutoff, setVisualHardCutoff] = useState(0.6);
+  const [visualRelevancyCutoff, setVisualRelevancyCutoff] = useState(0.6);
+  const [visualHardCutoff, setVisualHardCutoff] = useState(0.5);
 
   const [enableServerSideCutoff, setEnableServerSideCutoff] = useState(true);
 
@@ -78,7 +78,7 @@ export const SearchPane = () => {
   const [possibleCuisines, setPossibleCuisines] = useState<StatsEntry|undefined>(undefined);
   const [possibleMealTypes, setPossibleMealTypes] = useState<StatsEntry|undefined>(undefined);
 
-  const [searchMode, setSearchMode] = useState<SearchTypes>("Embedded");
+  const [searchMode, setSearchMode] = useState<SearchTypes>("WeightedHybridSum");
 
   const [loading, setLoading] = useState(false);
 
