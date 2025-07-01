@@ -3,7 +3,7 @@ allowedStages:
 regions:
   - eu-west-1
 stacks:
-  - content-api
+  - feast
 deployments:
   cfn-eu-west-1-content-api-recipe-search-ui-playground:
     type: cloud-formation
@@ -23,6 +23,6 @@ deployments:
           value: "public, max-age=60"
         - pattern: ".*"
           value: "public, max-age=3600"
-      publicReadAcl: true
+      publicReadAcl: false
       prefixStack: false
     dependencies: ["cfn-eu-west-1-content-api-recipe-search-ui-playground"]

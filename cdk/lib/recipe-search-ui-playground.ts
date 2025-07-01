@@ -1,6 +1,8 @@
 import type { GuStackProps } from '@guardian/cdk/lib/constructs/core';
 import { GuStack, GuStringParameter } from '@guardian/cdk/lib/constructs/core';
-import type { App } from 'aws-cdk-lib';
+import { GuCname } from '@guardian/cdk/lib/constructs/dns';
+import type { App} from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 import { aws_ssm, CfnOutput } from 'aws-cdk-lib';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { Distribution, HttpVersion, PriceClass } from 'aws-cdk-lib/aws-cloudfront';
@@ -11,8 +13,9 @@ import { Bucket } from 'aws-cdk-lib/aws-s3';
 const app = "recipe-search-ui-playground";
 
 const hostingDomain:Record<string,string> = {
-  "PROD": "recipe-search.capi.gutools.co.uk",
-  "TEST": "recipe-search.test.capi.dev-gutools.co.uk"
+  "PROD": "recipe-search.gutools.co.uk",
+  "CODE": "recipe-search.code.dev-gutools.co.uk",
+  "TEST": "recipe-search.test.dev-gutools.co.uk"
 }
 
 export class RecipeSearchUiPlayground extends GuStack {
@@ -28,7 +31,6 @@ export class RecipeSearchUiPlayground extends GuStack {
     });
 
     const hostingBucket = Bucket.fromBucketName(this, "StaticBucket", staticBucketNameParam.valueAsString);
-
 
     //We can't create the cert here, because it must live in us-east-1 for Cloudfront to use it.
     const hostingCertArn = new GuStringParameter(this, "DistroCertArn", {
@@ -70,6 +72,13 @@ export class RecipeSearchUiPlayground extends GuStack {
 
     new CfnOutput(this, "DistroUrlOut", {
       value: cloudFrontDistro.distributionDomainName,
+    });
+
+    new GuCname(this, "SearchUICname", {
+      resourceRecord: cloudFrontDistro.distributionDomainName,
+      domainName: hostingDomain[this.stage]!,
+      ttl: Duration.seconds(30),
+      app: this.app!
     });
 
   }

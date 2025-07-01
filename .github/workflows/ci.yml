@@ -48,7 +48,7 @@ jobs:
           roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           configPath: cdk/riff-raff.yaml
-          projectName: "Off-platform::recipe-search-ui-playground"
+          projectName: "Feast::recipe-search-ui-playground"
           contentDirectories: |
             cdk:
               - cdk/cdk.out

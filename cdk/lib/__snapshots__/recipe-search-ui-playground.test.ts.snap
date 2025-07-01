@@ -6,6 +6,7 @@ exports[`The RecipeSearchUiPlayground stack matches the snapshot 1`] = `
     "gu:cdk:constructs": [
       "GuStringParameter",
       "GuStringParameter",
+      "GuCname",
     ],
     "gu:cdk:version": "TEST",
   },
@@ -40,7 +41,7 @@ exports[`The RecipeSearchUiPlayground stack matches the snapshot 1`] = `
       "Properties": {
         "DistributionConfig": {
           "Aliases": [
-            "recipe-search.test.capi.dev-gutools.co.uk",
+            "recipe-search.test.dev-gutools.co.uk",
           ],
           "DefaultCacheBehavior": {
             "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
@@ -129,6 +130,23 @@ exports[`The RecipeSearchUiPlayground stack matches the snapshot 1`] = `
         },
       },
       "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+    },
+    "SearchUICname": {
+      "Properties": {
+        "Name": "recipe-search.test.dev-gutools.co.uk",
+        "RecordType": "CNAME",
+        "ResourceRecords": [
+          {
+            "Fn::GetAtt": [
+              "SearchPlaygroundDistE0868C1C",
+              "DomainName",
+            ],
+          },
+        ],
+        "Stage": "TEST",
+        "TTL": 30,
+      },
+      "Type": "Guardian::DNS::RecordSet",
     },
   },
 }
